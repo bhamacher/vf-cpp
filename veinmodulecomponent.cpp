@@ -12,8 +12,8 @@ using namespace VfCpp;
 
 
 
-cVeinModuleComponent::cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval)
-    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval)
+cVeinModuleComponent::cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, bool readOnly)
+    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval), m_readOnly(readOnly)
 {
     sendNotification(VeinComponent::ComponentData::Command::CCMD_ADD);
 }
@@ -70,6 +70,14 @@ void cVeinModuleComponent::setError()
 
     m_pEventSystem->sigSendEvent(cEvent);
 
+}
+
+void cVeinModuleComponent::setValueByEvent(QVariant value)
+{
+    if(!m_readOnly){
+        setValue(value);
+        emit sigValueChanged(value);
+    }
 }
 
 

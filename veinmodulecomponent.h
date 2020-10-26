@@ -26,8 +26,10 @@ public:
 
     typedef  QSharedPointer< cVeinModuleComponent > Ptr;
 
-    cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval);
+    cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, bool readOnly=false);
     ~cVeinModuleComponent();
+
+    void setValueByEvent(QVariant value);
 
     QVariant getValue();
     QString getName();
@@ -45,7 +47,7 @@ protected:
     VeinEvent::EventSystem *m_pEventSystem;
     QString m_sName;
     QVariant m_vValue;
-
+    bool m_readOnly;
 
 protected:
 
