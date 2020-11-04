@@ -58,12 +58,16 @@ public:
         return m_component;
     };
 
-    VeinCompProxy& operator=(const T& other){
-        setValue(other);
+    VeinCompProxy<T>& operator=(const T& other){
+        if(m_component != nullptr){
+            setValue(other);
+        }
+        return *this;
     };
 
-    VeinCompProxy& operator=(const  QSharedPointer<cVeinModuleComponent> other){
+    VeinCompProxy<T>& operator=(cVeinModuleComponent::Ptr other){
         m_component=other;
+        return *this;
     };
 
     T operator*(){
