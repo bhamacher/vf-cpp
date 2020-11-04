@@ -5,7 +5,7 @@ using namespace VfCpp;
 
 
 cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter)
-    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_function(p_funcName), m_parameter(p_parameter),m_object(p_object)
+    : m_object(p_object), m_function(p_funcName), m_parameter(p_parameter), m_nEntityId(entityId), m_pEventSystem(eventsystem)
 {
     m_rpcName=m_function;
     m_rpcName.append("(");
