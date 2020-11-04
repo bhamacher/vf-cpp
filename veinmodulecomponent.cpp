@@ -74,8 +74,10 @@ void cVeinModuleComponent::setError()
 
 void cVeinModuleComponent::setValueByEvent(QVariant value)
 {
-    if(!m_readOnly){
-        setValue(value);
+    if(value != getValue()){
+        if(!m_readOnly){
+            setValue(value);
+        }
         emit sigValueChanged(value);
     }
 }
@@ -99,6 +101,6 @@ void cVeinModuleComponent::sendNotification(VeinComponent::ComponentData::Comman
     QUuid id; // null id
     event->setPeerId(id);
 
-    m_pEventSystem->sigSendEvent(event);
+    emit m_pEventSystem->sigSendEvent(event);
 }
 
