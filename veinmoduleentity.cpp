@@ -3,7 +3,8 @@
 
 using namespace VfCpp;
 
-veinmoduleentity::veinmoduleentity(int p_entityId):
+veinmoduleentity::veinmoduleentity(int p_entityId,QObject *p_parent):
+    VeinEvent::EventSystem(p_parent),
     m_entityId(p_entityId)
 {
  //QObject::connect(this,&veinmoduleentity::sigAttached,this,&veinmoduleentity::initModule);
@@ -89,8 +90,9 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
                     p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION)
             {
                 if(m_componentList.contains(cName) && entityId == m_entityId){
-                    m_componentList[cName].get()->setValueByEvent(cData->newValue());
+                    m_componentList[cName]->setValueByEvent(cData->newValue());
                     retVal=true;
+                    p_cEvent->accept();
                 }
             }
         // managed by other entites
@@ -135,7 +137,7 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
 
 
     }
-
+    return retVal;
 }
 
 int veinmoduleentity::getEntitiyId() const
@@ -149,7 +151,7 @@ void veinmoduleentity::initModule()
     eData->setCommand(VeinComponent::EntityData::Command::ECMD_ADD);
     eData->setEntityId(m_entityId);
     VeinEvent::CommandEvent *tmpEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
-    sigSendEvent(tmpEvent);
+    emit sigSendEvent(tmpEvent);
 }
 
 QMap<QString, cVeinModuleRpc::Ptr> veinmoduleentity::getRpcList() const

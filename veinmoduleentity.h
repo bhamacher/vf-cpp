@@ -26,7 +26,7 @@ class veinmoduleentity : public VeinEvent::EventSystem
 public:
     typedef QSharedPointer<veinmoduleentity> Ptr;
 
-    veinmoduleentity(int p_entityId);
+    veinmoduleentity(int p_entityId,QObject *p_parent=nullptr);
     ~veinmoduleentity();
     /**
      * @brief createComponent creates a new vein component
