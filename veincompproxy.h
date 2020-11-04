@@ -32,11 +32,13 @@ namespace VfCpp {
  */
 template <class T> class VeinCompProxy{
 public:
-    VeinCompProxy(){
+    VeinCompProxy():
+        m_component(nullptr)
+    {
 
-    }
+    };
 
-    VeinCompProxy(QSharedPointer<cVeinModuleComponent> obj){
+    VeinCompProxy(cVeinModuleComponent::Ptr obj){
         m_component=obj;
     };
 
@@ -44,16 +46,26 @@ public:
         m_component=obj.m_component;
     };
 
+    ~VeinCompProxy()
+    {
+        m_component.clear();
+    };
+
 
     T value(){
-        return m_component->getValue().value<T>();
+        if(m_component != nullptr){
+            return m_component->getValue().value<T>();
+        }
+        return T();
     };
 
     void setValue(T p_val){
-        m_component->setValue(p_val);
+       if(m_component != nullptr){
+            m_component->setValue(p_val);
+       }
     };
 
-    QSharedPointer<cVeinModuleComponent> component() const
+    cVeinModuleComponent::Ptr component() const
     {
         return m_component;
     };
@@ -70,16 +82,15 @@ public:
         return *this;
     };
 
-    T operator*(){
+    cVeinModuleComponent::Ptr operator*(){
         return m_component;
     };
 
     bool operator!=(const T& val){
         if(val != value()){
             return true;
-        }else{
-            return false;
         }
+            return false;
     };
 
     bool operator==(const T& val){
@@ -122,6 +133,7 @@ public:
         }
     };
 
+    void* operator new(std::size_t size) = delete ;
 
 private:
     /**
@@ -131,11 +143,9 @@ private:
      *
      * objects of this type should not be created with new.
      */
-    void* operator new(size_t size){
-        return nullptr;
-    }
 
-    QSharedPointer<cVeinModuleComponent> m_component;
+
+    cVeinModuleComponent::Ptr m_component;
 
 };
 }
