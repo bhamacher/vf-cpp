@@ -12,7 +12,6 @@ veinmoduleentity::veinmoduleentity(int p_entityId,QObject *p_parent):
 
 veinmoduleentity::~veinmoduleentity()
 {
-
 }
 
 bool veinmoduleentity::hasComponent(const QString name)
@@ -22,9 +21,14 @@ bool veinmoduleentity::hasComponent(const QString name)
 
 cVeinModuleComponent::Ptr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, bool p_readOnly)
 {
-    cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_readOnly), &QObject::deleteLater);
-    m_componentList[tmpPtr->getName()]=tmpPtr;
-    return tmpPtr;
+    if(!hasComponent(p_name)) {
+        cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_readOnly), &QObject::deleteLater);
+        m_componentList[tmpPtr->getName()]=tmpPtr;
+        return tmpPtr;
+    }
+    else {
+        qFatal("veinmoduleentity::createComponent: A component %s already exists", qPrintable(p_name));
+    }
 }
 
 
