@@ -29,6 +29,12 @@ public:
     veinmoduleentity(int p_entityId,QObject *p_parent=nullptr);
     ~veinmoduleentity();
     /**
+     * @brief hasComponent checks if component is in m_componentList
+     * @param [in] name: the component name
+     * @return true if component was found
+     */
+    bool hasComponent(const QString name);
+    /**
      * @brief createComponent creates a new vein component
      * @param[in] name: the component name
      * @param[in] initval: the initial component value
