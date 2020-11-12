@@ -39,13 +39,16 @@ QString cVeinModuleRpc::rpcName() const
 };
 
 void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters) {
+    Q_UNUSED(p_callId)
     QVariantMap returnVal;
     QVariant fcnRetVal;
 
     // check parameters
-    QSet<QString> requiredParamKeys = m_parameter.keys().toSet();
+    QStringList requiredParamList = m_parameter.keys();
+    QSet<QString> requiredParamKeys(requiredParamList.begin(), requiredParamList.end());
     const QVariantMap searchParameters = t_rpcParameters.value(VeinComponent::RemoteProcedureData::s_parameterString).toMap();
-    requiredParamKeys.subtract(searchParameters.keys().toSet());
+    QStringList searchParamList = searchParameters.keys();
+    requiredParamKeys.subtract(QSet<QString>(searchParamList.begin(), searchParamList.end()));
 
     if(requiredParamKeys.isEmpty())
     {
@@ -69,7 +72,7 @@ void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, c
         // write error msg on error
         returnVal=t_rpcParameters;
         returnVal.insert(VeinComponent::RemoteProcedureData::s_resultCodeString, RPCResultCodes::RPC_EINVAL);
-        returnVal.insert(VeinComponent::RemoteProcedureData::s_errorMessageString, QString("Missing required parameters: [%1]").arg(requiredParamKeys.toList().join(',')));
+        returnVal.insert(VeinComponent::RemoteProcedureData::s_errorMessageString, QString("Missing required parameters: [%1]").arg(requiredParamList.join(',')));
     }
     // send answer
     returnVal.insert(VeinComponent::RemoteProcedureData::s_callIdString,t_rpcParameters[VeinComponent::RemoteProcedureData::s_callIdString]);
