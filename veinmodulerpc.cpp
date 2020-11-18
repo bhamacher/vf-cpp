@@ -27,6 +27,9 @@ cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem
     rpcData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
     rpcData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
 
+    QObject::connect(this,&cVeinModuleRpc::callFunctionPrivateSignal,this,&cVeinModuleRpc::callFunctionPrivate,Qt::QueuedConnection);
+
+
     emit  m_pEventSystem->sigSendEvent(new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, rpcData));
 }
 cVeinModuleRpc::~cVeinModuleRpc(){
@@ -38,8 +41,13 @@ QString cVeinModuleRpc::rpcName() const
     return m_rpcName;
 };
 
-void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters) {
-    Q_UNUSED(p_callId)
+void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
+{
+    emit callFunctionPrivateSignal(p_callId,p_peerId,t_rpcParameters);
+};
+
+void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
+{
     QVariantMap returnVal;
     QVariant fcnRetVal;
 
