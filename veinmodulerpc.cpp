@@ -1,11 +1,13 @@
 #include "veinmodulerpc.h"
 
+#include <QtConcurrent/QtConcurrent>
+
 using namespace VfCpp;
 
 
 
-cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter)
-    : m_object(p_object), m_function(p_funcName), m_parameter(p_parameter), m_nEntityId(entityId), m_pEventSystem(eventsystem)
+cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter,bool p_threaded)
+    : m_object(p_object), m_function(p_funcName), m_parameter(p_parameter), m_nEntityId(entityId), m_pEventSystem(eventsystem),m_threaded(p_threaded)
 {
     m_rpcName=m_function;
     m_rpcName.append("(");
@@ -48,6 +50,7 @@ void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, c
 
 void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
 {
+    const auto rpcHandling = [=]() {
     QVariantMap returnVal;
     QVariant fcnRetVal;
 
@@ -96,5 +99,12 @@ void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_p
     VeinEvent::CommandEvent *rpcResultEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, resultData);
     rpcResultEvent->setPeerId(p_peerId);
     emit m_pEventSystem->sigSendEvent(rpcResultEvent);
+    };
+
+    if(m_threaded){
+        QtConcurrent::run(rpcHandling);
+    }else{
+        rpcHandling();
+    }
 
 };
