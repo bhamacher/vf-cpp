@@ -44,7 +44,7 @@ public:
     };
 
 
-    cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter);
+    cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter,bool p_threaded=true);
     ~cVeinModuleRpc();
 
     QString rpcName() const;
@@ -66,6 +66,8 @@ private:
 
     int m_nEntityId;
     VeinEvent::EventSystem *m_pEventSystem;
+
+    bool m_threaded;
 
     friend class VeinEvent::EventSystem;
 };
