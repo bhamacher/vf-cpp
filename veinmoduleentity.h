@@ -54,7 +54,7 @@ public:
      * There is no reason to use the rpc handler object
      *
      */
-    cVeinModuleRpc::Ptr createRpc(QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter);
+    cVeinModuleRpc::Ptr createRpc(QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter, bool p_thread=true);
     /**
      * @brief processEvent
      * @param t_event
