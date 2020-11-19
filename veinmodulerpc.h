@@ -9,6 +9,7 @@
 #include <QList>
 #include <QUuid>
 #include <QSharedPointer>
+#include <QMutexLocker>
 
 #include <vcmp_componentdata.h>
 #include <vcmp_errordata.h>
@@ -68,6 +69,8 @@ private:
     VeinEvent::EventSystem *m_pEventSystem;
 
     bool m_threaded;
+
+    QMutex m_mutex;
 
     friend class VeinEvent::EventSystem;
 };

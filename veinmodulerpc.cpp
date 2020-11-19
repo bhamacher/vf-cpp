@@ -51,6 +51,7 @@ void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, c
 void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
 {
     const auto rpcHandling = [=]() {
+        QMutexLocker locker(&(this->m_mutex));
         QVariantMap returnVal;
         QVariant fcnRetVal;
 
