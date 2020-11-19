@@ -32,9 +32,9 @@ cVeinModuleComponent::Ptr  veinmoduleentity::createComponent(QString p_name, QVa
 }
 
 
-cVeinModuleRpc::Ptr  veinmoduleentity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter)
+cVeinModuleRpc::Ptr  veinmoduleentity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
 {
-    cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter),&QObject::deleteLater);
+    cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter,p_threaded),&QObject::deleteLater);
     m_rpcList[tmpPtr->rpcName()]=tmpPtr;
     return tmpPtr;
 }
