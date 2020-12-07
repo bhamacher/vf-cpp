@@ -32,11 +32,11 @@ find_package(VfEvent REQUIRED)
 
 #sum up project Files 
 file(GLOB SOURCES 
-    ${PROJECT_SOURCE_DIR}/*.cpp
+    ${PROJECT_SOURCE_DIR}/src/*.cpp
     )
 
 file(GLOB HEADER
-    ${PROJECT_SOURCE_DIR}/*.h
+    ${PROJECT_SOURCE_DIR}/src/*.h
     )
 
 file(GLOB RESOURCES 
