@@ -75,7 +75,7 @@ public:
      * @brief unWatchComponent
      * @param p_EntityId
      * @param p_componentName
-     * @return
+     * @return true on success
      */
     bool unWatchComponent(int p_EntityId, const QString &p_componentName);
 private:
@@ -83,7 +83,7 @@ private:
 private:
     /**
      * @brief m_componentList
-     * List with all regitered comoponents
+     * List with all registered comoponents
      */
     QMap<QString,cVeinModuleComponent::Ptr> m_componentList;
     /**
@@ -93,7 +93,7 @@ private:
     QMap<QString,cVeinModuleRpc::Ptr> m_rpcList;
     /**
      * @brief m_watchList
-     * List with all wathced components
+     * List with all watched components
      */
     QMap<int,QSet<QString>> m_watchList;
     //QMap<QString,cVeinModuleRpc> m_activeObjectList;
@@ -113,6 +113,10 @@ public:
 signals:
     void sigWatchedComponentChanged(int p_entityId,QString p_componentName,QVariant p_value);
 public slots:
+    /**
+     * @brief initModule
+     * call once after constructor
+     */
     void initModule();
 };
 
