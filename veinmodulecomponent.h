@@ -26,9 +26,24 @@ public:
 
     typedef  QSharedPointer< cVeinModuleComponent > Ptr;
 
+    /**
+     * @brief cVeinModuleComponent
+     * creates a vein component
+     * @param entityId: ID of entity this component is mapped to.
+     * @param eventsystem: pointer to managing Eventsystem object
+     * @param name : componet name as string
+     * @param initval: initial value
+     * @param readOnly: set true for readonly component
+     */
     cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, bool readOnly=false);
     ~cVeinModuleComponent();
 
+    /**
+     * @brief setValueByEvent
+     * This class is meant for use in generic EventSystem classes and should be used in
+     * processEvent functions.
+     * @param value
+     */
     void setValueByEvent(QVariant value);
 
     QVariant getValue();
@@ -50,7 +65,11 @@ protected:
     bool m_readOnly;
 
 protected:
-
+    /**
+     * @brief sendNotification
+     * sends data to vein, if something changed
+     * @param vcmd
+     */
     virtual void sendNotification(VeinComponent::ComponentData::Command vcmd);
 };
 }

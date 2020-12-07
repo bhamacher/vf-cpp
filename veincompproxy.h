@@ -59,17 +59,34 @@ public:
         return T();
     };
 
+    /**
+     * @brief setValue
+     * @param p_val vein value of type T
+     */
     void setValue(T p_val){
        if(m_component != nullptr){
             m_component->setValue(p_val);
        }
     };
 
+
+    /**
+     * @brief component
+     * Returns the vein component this template class is
+     * wrapped around
+     * @return cVeinComponent
+     */
     cVeinModuleComponent::Ptr component() const
     {
         return m_component;
     };
 
+    /**
+     * @brief operator =
+     * set vein value with = operator
+     * @param other: the vein Value
+     * @return new VeinCompProxy
+     */
     VeinCompProxy<T>& operator=(const T& other){
         if(m_component != nullptr){
             setValue(other);
@@ -82,6 +99,11 @@ public:
         return *this;
     };
 
+    /**
+     * @brief operator *
+     * like function component
+     * @return
+     */
     cVeinModuleComponent::Ptr operator*(){
         return m_component;
     };
@@ -93,6 +115,12 @@ public:
             return false;
     };
 
+    /**
+     * @brief operator ==
+     * compare vein value with variable of type T
+     * @param val
+     * @return true/false
+     */
     bool operator==(const T& val){
         if(val == value()){
             return true;
@@ -101,6 +129,12 @@ public:
         }
     };
 
+    /**
+     * @brief operator >=
+     * compare vein value with variable of type T
+     * @param val
+     * @return true/false
+     */
     bool operator>=(const T& val){
         if(val >= value()){
             return true;
@@ -108,7 +142,12 @@ public:
             return false;
         }
     };
-
+    /**
+     * @brief operator <=
+     * compare vein value with variable of type T
+     * @param val
+     * @return true/false
+     */
     bool operator<=(const T& val){
         if(val <= value()){
             return true;
@@ -117,6 +156,12 @@ public:
         }
     };
 
+    /**
+     * @brief operator <
+     * compare vein value with variable of type T
+     * @param val
+     * @return true/false
+     */
     bool operator<(const T& val){
         if(val > value()){
             return true;
@@ -125,6 +170,12 @@ public:
         }
     };
 
+    /**
+     * @brief operator >
+     * compare vein value with variable of type T
+     * @param val
+     * @return true/false
+     */
     bool operator>(const T& val){
         if(val < value()){
             return true;
@@ -133,17 +184,13 @@ public:
         }
     };
 
+    /**
+     * @brief operator new
+     * The new operator is deleted.
+     */
     void* operator new(std::size_t size) = delete ;
 
 private:
-    /**
-     * @brief operator new
-     * @param size
-     * @return
-     *
-     * objects of this type should not be created with new.
-     */
-
 
     cVeinModuleComponent::Ptr m_component;
 
