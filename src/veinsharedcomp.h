@@ -3,7 +3,7 @@
 
 
 
-#include "veinmodulecomponent.h"
+#include "veinabstractcomponent.h"
 
 
 namespace VfCpp {
@@ -38,7 +38,7 @@ public:
 
     };
 
-    VeinSharedComp(cVeinModuleComponent::Ptr obj){
+    VeinSharedComp(VeinAbstractComponent::WPtr obj){
         m_component=obj;
     };
 
@@ -76,7 +76,7 @@ public:
      * wrapped around
      * @return cVeinComponent
      */
-    cVeinModuleComponent::Ptr component() const
+    VeinAbstractComponent::WPtr component() const
     {
         return m_component;
     };
@@ -94,7 +94,7 @@ public:
         return *this;
     };
 
-    VeinSharedComp<T>& operator=(cVeinModuleComponent::Ptr other){
+    VeinSharedComp<T>& operator=(VeinAbstractComponent::WPtr other){
         m_component=other;
         return *this;
     };
@@ -104,7 +104,7 @@ public:
      * like function component
      * @return
      */
-    cVeinModuleComponent::Ptr operator*(){
+    VeinAbstractComponent::WPtr operator*(){
         return m_component;
     };
 
@@ -192,7 +192,7 @@ public:
 
 private:
 
-    cVeinModuleComponent::Ptr m_component;
+    VeinAbstractComponent::WPtr m_component;
 
 };
 }

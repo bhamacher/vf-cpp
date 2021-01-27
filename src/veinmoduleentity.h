@@ -4,8 +4,9 @@
 #include <QList>
 #include <QMap>
 #include <ve_eventsystem.h>
-#include <veinmodulecomponent.h>
-#include <veinmodulerpc.h>
+
+#include "veinmodulecomponent.h"
+#include "veinmodulerpc.h"
 
 namespace VfCpp {
 
@@ -25,6 +26,7 @@ class veinmoduleentity : public VeinEvent::EventSystem
     Q_OBJECT
 public:
     typedef QSharedPointer<veinmoduleentity> Ptr;
+    typedef QWeakPointer<veinmoduleentity> WPtr;
 
     veinmoduleentity(int p_entityId,QObject *p_parent=nullptr);
     ~veinmoduleentity();
@@ -43,7 +45,7 @@ public:
      *
      * it is recommended to store the handler in vfcompproxy.
      */
-    cVeinModuleComponent::Ptr  createComponent(QString name, QVariant initval, bool p_readOnly=false);
+    cVeinModuleComponent::WPtr  createComponent(QString name, QVariant initval, bool p_readOnly=false);
     /**
      * @brief createRpc creates a vein rpc
      * @param p_object: the object handling the rpc
@@ -54,7 +56,7 @@ public:
      * There is no reason to use the rpc handler object
      *
      */
-    cVeinModuleRpc::Ptr createRpc(QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter, bool p_thread=true);
+    cVeinModuleRpc::WPtr createRpc(QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter, bool p_thread=true);
     /**
      * @brief processEvent
      * @param t_event

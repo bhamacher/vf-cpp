@@ -13,18 +13,21 @@
 #include <vcmp_errordata.h>
 #include <ve_eventsystem.h>
 
+#include "veinabstractcomponent.h"
+
 namespace VfCpp {
 /**
  * @brief The cVeinModuleComponent class
  *
  * Abstraction for vein components
  */
-class cVeinModuleComponent: public QObject
+class cVeinModuleComponent: public VeinAbstractComponent
 {
     Q_OBJECT
 public:
 
     typedef  QSharedPointer< cVeinModuleComponent > Ptr;
+    typedef  QWeakPointer< cVeinModuleComponent > WPtr;
 
     /**
      * @brief cVeinModuleComponent

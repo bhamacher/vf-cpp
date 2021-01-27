@@ -19,7 +19,7 @@ bool veinmoduleentity::hasComponent(const QString name)
     return m_componentList.contains(name);
 }
 
-cVeinModuleComponent::Ptr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, bool p_readOnly)
+cVeinModuleComponent::WPtr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, bool p_readOnly)
 {
     if(!hasComponent(p_name)) {
         cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_readOnly), &QObject::deleteLater);
@@ -32,7 +32,7 @@ cVeinModuleComponent::Ptr  veinmoduleentity::createComponent(QString p_name, QVa
 }
 
 
-cVeinModuleRpc::Ptr  veinmoduleentity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
+cVeinModuleRpc::WPtr  veinmoduleentity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
 {
     cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter,p_threaded),&QObject::deleteLater);
     m_rpcList[tmpPtr->rpcName()]=tmpPtr;

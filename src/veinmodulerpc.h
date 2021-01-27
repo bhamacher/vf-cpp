@@ -36,6 +36,7 @@ class cVeinModuleRpc: public QObject
     Q_OBJECT
 public:
     typedef  QSharedPointer< cVeinModuleRpc > Ptr;
+    typedef  QWeakPointer< cVeinModuleRpc > WPtr;
     typedef  QMap<QString, QString> Param;
 
     enum RPCResultCodes {
