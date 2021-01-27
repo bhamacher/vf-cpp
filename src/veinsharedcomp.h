@@ -1,5 +1,5 @@
-#ifndef VEINCOMPPROXY_H
-#define VEINCOMPPROXY_H
+#ifndef VeinSharedComp_H
+#define VeinSharedComp_H
 
 
 
@@ -30,23 +30,23 @@ namespace VfCpp {
  * or
  * *attribute
  */
-template <class T> class VeinCompProxy{
+template <class T> class VeinSharedComp{
 public:
-    VeinCompProxy():
+    VeinSharedComp():
         m_component(nullptr)
     {
 
     };
 
-    VeinCompProxy(cVeinModuleComponent::Ptr obj){
+    VeinSharedComp(cVeinModuleComponent::Ptr obj){
         m_component=obj;
     };
 
-    VeinCompProxy(VeinCompProxy &obj){
+    VeinSharedComp(VeinSharedComp &obj){
         m_component=obj.m_component;
     };
 
-    ~VeinCompProxy()
+    ~VeinSharedComp()
     {
         m_component.clear();
     };
@@ -85,16 +85,16 @@ public:
      * @brief operator =
      * set vein value with = operator
      * @param other: the vein Value
-     * @return new VeinCompProxy
+     * @return new VeinSharedComp
      */
-    VeinCompProxy<T>& operator=(const T& other){
+    VeinSharedComp<T>& operator=(const T& other){
         if(m_component != nullptr){
             setValue(other);
         }
         return *this;
     };
 
-    VeinCompProxy<T>& operator=(cVeinModuleComponent::Ptr other){
+    VeinSharedComp<T>& operator=(cVeinModuleComponent::Ptr other){
         m_component=other;
         return *this;
     };
@@ -202,4 +202,4 @@ private:
 
 
 
-#endif // VEINCOMPPROXY_H
+#endif // VeinSharedComp_H
