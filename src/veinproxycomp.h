@@ -5,7 +5,7 @@
 
 #include "veinabstractcomponent.h"
 
-namespace vfCpp {
+namespace VfCpp {
 
 
 

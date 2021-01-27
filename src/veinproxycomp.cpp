@@ -1,6 +1,6 @@
 #include "veinproxycomp.h"
 
-using namespace vfCpp;
+using namespace VfCpp;
 
 VeinProxyComp::VeinProxyComp()
 {
