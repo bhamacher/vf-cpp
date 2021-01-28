@@ -7,7 +7,7 @@ veinmoduleentity::veinmoduleentity(int p_entityId,QObject *p_parent):
     VeinEvent::EventSystem(p_parent),
     m_entityId(p_entityId)
 {
- //QObject::connect(this,&veinmoduleentity::sigAttached,this,&veinmoduleentity::initModule);
+    //QObject::connect(this,&veinmoduleentity::sigAttached,this,&veinmoduleentity::initModule);
 }
 
 veinmoduleentity::~veinmoduleentity()
@@ -62,9 +62,19 @@ bool veinmoduleentity::processEvent(QEvent *t_event)
     return retVal;
 }
 
-void veinmoduleentity::watchComponent(int p_EntityId, const QString &p_componentName)
+VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QString &p_SubComponentName)
 {
-    m_watchList[p_EntityId].insert(p_componentName);
+    // check if entite already exists in watchlist
+    if(!m_watchList.contains(p_SubEntityId)){
+        m_watchList[p_SubEntityId]=QMap<QString,VeinProxyComp::Ptr>();
+    }
+    // check if component is already subscribed. Create if not.
+    // If the component is already subscribed we can just return the already exyisting component
+    if(!m_watchList[p_SubEntityId].contains(p_SubComponentName)){
+        VeinProxyComp::Ptr tmpPtr= VeinProxyComp::Ptr(new VeinProxyComp(m_entityId,this,p_SubEntityId,p_SubComponentName));
+        m_watchList[p_SubEntityId][p_SubComponentName]=tmpPtr;
+    }
+    return m_watchList[p_SubEntityId][p_SubComponentName];
 }
 
 bool veinmoduleentity::unWatchComponent(int p_EntityId, const QString &p_componentName)
@@ -79,12 +89,12 @@ bool veinmoduleentity::unWatchComponent(int p_EntityId, const QString &p_compone
     return retVal;
 }
 
-   //@TODO check if notification is reachable
-   //@TODO implement and handle active objects
+//@TODO check if notification is reachable
+//@TODO implement and handle active objects
 bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
 {
-     bool retVal = false;
-     // handle components
+    bool retVal = false;
+    // handle components
     if (p_cEvent->eventData()->type() == VeinComponent::ComponentData::dataType())
     {
         QString cName;
@@ -95,25 +105,31 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
         // Managed by this entity
         if (p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION)
         {
-            if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET &&
-                    p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION)
+            if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET)
             {
                 if(m_componentList.contains(cName) && entityId == m_entityId){
                     m_componentList[cName]->setValueByEvent(cData->newValue());
                     retVal=true;
                     p_cEvent->accept();
                 }
+            }else if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_FETCH){
+                //Nothing to do here. This is a placeholder in case the storage will not handle FETCH
+                //events in Future anymore.
             }
-        // managed by other entites
+            // managed by other entites
 
         }else if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::NOTIFICATION){
             if(m_watchList.contains(entityId)){
                 if(m_watchList[entityId].contains(cName)){
-                    emit sigWatchedComponentChanged(entityId,cName,cData->newValue());
+                    if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET ||
+                       cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_FETCH)
+                    {
+                        m_watchList[entityId][cName]->setValueByEvent(cData->newValue());
+                    }
                 }
             }
         }
-    // handle rpcs
+        // handle rpcs
     }else if(p_cEvent->eventData()->type() == VeinComponent::RemoteProcedureData::dataType()){
         VeinComponent::RemoteProcedureData *rpcData=nullptr;
         rpcData = static_cast<VeinComponent::RemoteProcedureData *>(p_cEvent->eventData());
@@ -168,12 +184,12 @@ QMap<QString, cVeinModuleRpc::Ptr> veinmoduleentity::getRpcList() const
     return m_rpcList;
 }
 
-QMap<int, QSet<QString> > veinmoduleentity::getWatchList() const
+QMap<int, QMap<QString,VeinProxyComp::Ptr> > veinmoduleentity::getWatchList() const
 {
     return m_watchList;
 }
 
-void veinmoduleentity::setWatchList(const QMap<int, QSet<QString> > &watchList)
+void veinmoduleentity::setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> > &watchList)
 {
     m_watchList = watchList;
 }

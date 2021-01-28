@@ -6,6 +6,7 @@
 #include <ve_eventsystem.h>
 
 #include "veinmodulecomponent.h"
+#include "veinproxycomp.h"
 #include "veinmodulerpc.h"
 
 namespace VfCpp {
@@ -72,7 +73,7 @@ public:
      *
      * @todo implement proxy object as return
      */
-    void watchComponent(int p_EntityId, const QString &p_componentName);
+    VeinProxyComp::WPtr watchComponent(int p_SubEntityId, const QString &p_SubComponentName);
     /**
      * @brief unWatchComponent
      * @param p_EntityId
@@ -85,7 +86,7 @@ private:
 private:
     /**
      * @brief m_componentList
-     * List with all registered comoponents
+     * List with all registered components
      */
     QMap<QString,cVeinModuleComponent::Ptr> m_componentList;
     /**
@@ -97,7 +98,7 @@ private:
      * @brief m_watchList
      * List with all watched components
      */
-    QMap<int,QSet<QString>> m_watchList;
+    QMap<int,QMap<QString,VeinProxyComp::Ptr>> m_watchList;
     //QMap<QString,cVeinModuleRpc> m_activeObjectList;
     /**
      * @brief m_entityId
@@ -109,8 +110,8 @@ public:
     void setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value);
     QMap<QString, cVeinModuleRpc::Ptr> getRpcList() const;
     void setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value);
-    QMap<int, QSet<QString> > getWatchList() const;
-    void setWatchList(const QMap<int, QSet<QString> > &watchList);
+    QMap<int, QMap<QString,VeinProxyComp::Ptr> > getWatchList() const;
+    void setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> >  &watchList);
     int getEntitiyId() const;
 signals:
     void sigWatchedComponentChanged(int p_entityId,QString p_componentName,QVariant p_value);
