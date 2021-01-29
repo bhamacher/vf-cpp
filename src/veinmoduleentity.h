@@ -3,11 +3,13 @@
 
 #include <QList>
 #include <QMap>
+#include <QPointer>
 #include <ve_eventsystem.h>
 
 #include "veinmodulecomponent.h"
 #include "veinproxycomp.h"
 #include "veinmodulerpc.h"
+#include "veinrpcfuture.h"
 
 namespace VfCpp {
 
@@ -81,6 +83,8 @@ public:
      * @return true on success
      */
     bool unWatchComponent(int p_EntityId, const QString &p_componentName);
+
+    VeinRpcFuture::Ptr invokeRPC(int p_entityId,const QString &p_procedureName, const QVariantMap &p_parameters);
 private:
     bool processCommandEvent(VeinEvent::CommandEvent *p_cEvent);
 private:
@@ -96,10 +100,17 @@ private:
     QMap<QString,cVeinModuleRpc::Ptr> m_rpcList;
     /**
      * @brief m_watchList
-     * List with all watched components
+     * List with all watched components (proxyComponents)
      */
     QMap<int,QMap<QString,VeinProxyComp::Ptr>> m_watchList;
     //QMap<QString,cVeinModuleRpc> m_activeObjectList;
+    /**
+     * @brief m_futureList
+     * List with all futures bound to called RPCs
+     */
+    // QMap<entityId,QMap<rpcname,QMap<rpcUniqueId,RpcFutureObject>>>
+    QMap<int, QMap<QString,QMap<QUuid,VeinRpcFuture::Ptr>>> m_futureList;
+
     /**
      * @brief m_entityId
      * The entites unique entity id
@@ -121,6 +132,8 @@ public slots:
      * call once after constructor
      */
     void initModule();
+private slots:
+
 };
 
 }

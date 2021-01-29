@@ -1,7 +1,10 @@
 #include "veinmoduleentity.h"
 #include "vcmp_entitydata.h"
+#include "vcmp_remoteproceduredata.h"
 
 using namespace VfCpp;
+using namespace VeinComponent;
+using namespace VeinEvent;
 
 veinmoduleentity::veinmoduleentity(int p_entityId,QObject *p_parent):
     VeinEvent::EventSystem(p_parent),
@@ -89,6 +92,39 @@ bool veinmoduleentity::unWatchComponent(int p_EntityId, const QString &p_compone
     return retVal;
 }
 
+VeinRpcFuture::Ptr veinmoduleentity::invokeRPC(int p_entityId, const QString &p_procedureName, const QVariantMap &p_parameters)
+{
+    QUuid rpcIdentifier;
+    rpcIdentifier=QUuid::createUuid();
+    // create future. Rpc data will end inside the future
+    VeinRpcFuture::Ptr tmpFuture=VeinRpcFuture::Ptr(new VeinRpcFuture(p_entityId,p_procedureName,rpcIdentifier));
+    // Add future to futurelist
+    if(!m_futureList.contains(p_entityId)){
+        m_futureList[p_entityId]=QMap<QString,QMap<QUuid,VeinRpcFuture::Ptr>>();
+    }
+    if(!m_futureList[p_entityId].contains(p_procedureName)){
+            m_futureList[p_entityId][p_procedureName]=QMap<QUuid,VeinRpcFuture::Ptr>();
+    }
+    m_futureList[p_entityId][p_procedureName][rpcIdentifier]=tmpFuture;
+
+    // send rpc invoke message
+
+    QVariantMap rpcParamData;
+    rpcParamData.insert(RemoteProcedureData::s_callIdString, rpcIdentifier);
+    rpcParamData.insert(RemoteProcedureData::s_parameterString, p_parameters);
+    RemoteProcedureData *rpcData = new RemoteProcedureData();
+    rpcData->setEntityId(m_entityId);
+    rpcData->setCommand(RemoteProcedureData::Command::RPCMD_CALL);
+    rpcData->setEventOrigin(ComponentData::EventOrigin::EO_LOCAL);
+    rpcData->setEventTarget(ComponentData::EventTarget::ET_ALL);
+    rpcData->setProcedureName(p_procedureName);
+    rpcData->setInvokationData(rpcParamData);
+    CommandEvent *cEvent = new CommandEvent(CommandEvent::EventSubtype::TRANSACTION, rpcData);
+    emit sigSendEvent(cEvent);
+
+    return tmpFuture;
+}
+
 //@TODO check if notification is reachable
 //@TODO implement and handle active objects
 bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
@@ -122,7 +158,7 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
             if(m_watchList.contains(entityId)){
                 if(m_watchList[entityId].contains(cName)){
                     if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET ||
-                       cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_FETCH)
+                            cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_FETCH)
                     {
                         m_watchList[entityId][cName]->setValueByEvent(cData->newValue());
                     }
@@ -133,30 +169,54 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
     }else if(p_cEvent->eventData()->type() == VeinComponent::RemoteProcedureData::dataType()){
         VeinComponent::RemoteProcedureData *rpcData=nullptr;
         rpcData = static_cast<VeinComponent::RemoteProcedureData *>(p_cEvent->eventData());
-        if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
-            if(m_rpcList.contains(rpcData->procedureName()))
-            {
-                retVal = true;
-                const QUuid callId = rpcData->invokationData().value(VeinComponent::RemoteProcedureData::s_callIdString).toUuid();
-                Q_ASSERT(callId.isNull() == false);
-                m_rpcList[rpcData->procedureName()]->callFunction(callId,p_cEvent->peerId(),rpcData->invokationData());
-                p_cEvent->accept();
+        // RPC located in this module
+        if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION){
+            if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
+                if(m_rpcList.contains(rpcData->procedureName()))
+                {
+                    retVal = true;
+                    const QUuid callId = rpcData->invokationData().value(VeinComponent::RemoteProcedureData::s_callIdString).toUuid();
+                    Q_ASSERT(callId.isNull() == false);
+                    m_rpcList[rpcData->procedureName()]->callFunction(callId,p_cEvent->peerId(),rpcData->invokationData());
+                    p_cEvent->accept();
+                }
+                else //unknown procedure
+                {
+                    retVal = true;
+                    qWarning() << "No remote procedure with entityId:" << m_entityId << "name:" << rpcData->procedureName();
+                    VF_ASSERT(false, QStringC(QString("No remote procedure with entityId: %1 name: %2").arg(m_entityId).arg(rpcData->procedureName())));
+                    VeinComponent::ErrorData *eData = new VeinComponent::ErrorData();
+                    eData->setEntityId(m_entityId);
+                    eData->setErrorDescription(QString("No remote procedure with name: %1").arg(rpcData->procedureName()));
+                    eData->setOriginalData(rpcData);
+                    eData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
+                    eData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
+                    VeinEvent::CommandEvent *errorEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
+                    errorEvent->setPeerId(p_cEvent->peerId());
+                    p_cEvent->accept();
+                    emit sigSendEvent(errorEvent);
+                }
             }
-            else //unknown procedure
-            {
-                retVal = true;
-                qWarning() << "No remote procedure with entityId:" << m_entityId << "name:" << rpcData->procedureName();
-                VF_ASSERT(false, QStringC(QString("No remote procedure with entityId: %1 name: %2").arg(m_entityId).arg(rpcData->procedureName())));
-                VeinComponent::ErrorData *eData = new VeinComponent::ErrorData();
-                eData->setEntityId(m_entityId);
-                eData->setErrorDescription(QString("No remote procedure with name: %1").arg(rpcData->procedureName()));
-                eData->setOriginalData(rpcData);
-                eData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
-                eData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
-                VeinEvent::CommandEvent *errorEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
-                errorEvent->setPeerId(p_cEvent->peerId());
-                p_cEvent->accept();
-                emit sigSendEvent(errorEvent);
+        // Answers provided by rpcs located in other modules
+        }else if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::NOTIFICATION){
+            int tmpEntId=rpcData->entityId();
+            QString tmpProcName=rpcData->procedureName();
+            QUuid tmpUid= rpcData->invokationData().value(RemoteProcedureData::s_callIdString).toUuid();
+            // check if data are targeting one of our futures
+            if(m_futureList.contains(tmpEntId)){
+                if(m_futureList[tmpEntId].contains(tmpProcName)){
+                    if(m_futureList[tmpEntId][tmpProcName].contains(tmpUid)){
+                        // update future
+                        m_futureList[tmpEntId][tmpProcName][tmpUid]->processRpcData(rpcData);
+                        //Remove future if this is a result msg.
+                        //The Future is a shared pointer and is only deleted from heap if no one else holds a reference.
+                        //Furthermore processRpcData emits a signal of some kind with a reference to itself.
+                        //Prevending the reference count to go to zero before computation is possible.
+                        if(rpcData->command() == RemoteProcedureData::Command::RPCMD_RESULT){
+                            m_futureList[tmpEntId][tmpProcName].remove(tmpUid);
+                        }
+                    }
+                }
             }
         }
 
