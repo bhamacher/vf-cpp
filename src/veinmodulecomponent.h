@@ -30,6 +30,20 @@ public:
     typedef  QWeakPointer< cVeinModuleComponent > WPtr;
 
     /**
+     * @brief The Direction enum
+     *
+     * Defines the component direction.
+     * out: write only from this enity
+     * in: wirte only from extern entities
+     * inOut: write from where you want
+     */
+    enum class Direction{
+        out,
+        in,
+        inOut
+    };
+
+    /**
      * @brief cVeinModuleComponent
      * creates a vein component
      * @param entityId: ID of entity this component is mapped to.
@@ -38,7 +52,7 @@ public:
      * @param initval: initial value
      * @param readOnly: set true for readonly component
      */
-    cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, bool readOnly=false);
+    cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, Direction p_direction=Direction::inOut);
     ~cVeinModuleComponent();
 
     /**
@@ -65,7 +79,7 @@ protected:
     VeinEvent::EventSystem *m_pEventSystem;
     QString m_sName;
     QVariant m_vValue;
-    bool m_readOnly;
+    Direction m_direction;
 
 protected:
     /**

@@ -12,8 +12,8 @@ using namespace VfCpp;
 
 
 
-cVeinModuleComponent::cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, bool readOnly)
-    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval), m_readOnly(readOnly)
+cVeinModuleComponent::cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, Direction p_direction)
+    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval), m_direction(p_direction)
 {
     sendNotification(VeinComponent::ComponentData::Command::CCMD_ADD);
 }
@@ -38,8 +38,10 @@ QString cVeinModuleComponent::getName()
 
 void cVeinModuleComponent::setValue(QVariant value)
 {
-    m_vValue = value;
-    sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
+    if(m_direction == Direction::out || m_direction == Direction::inOut){
+        m_vValue = value;
+        sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
+    }
 }
 
 
@@ -75,8 +77,9 @@ void cVeinModuleComponent::setError()
 void cVeinModuleComponent::setValueByEvent(QVariant value)
 {
     if(value != getValue()){
-        if(!m_readOnly){
-            setValue(value);
+        if(m_direction == Direction::in || m_direction == Direction::inOut){
+            m_vValue = value;
+            sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
         }
         emit sigValueChanged(value);
     }

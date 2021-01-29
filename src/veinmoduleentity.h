@@ -48,7 +48,7 @@ public:
      *
      * it is recommended to store the handler in vfcompproxy.
      */
-    cVeinModuleComponent::WPtr  createComponent(QString name, QVariant initval, bool p_readOnly=false);
+    cVeinModuleComponent::WPtr  createComponent(QString name, QVariant initval, cVeinModuleComponent::Direction p_direction = cVeinModuleComponent::Direction::inOut);
     /**
      * @brief createRpc creates a vein rpc
      * @param p_object: the object handling the rpc

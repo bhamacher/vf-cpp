@@ -22,10 +22,10 @@ bool veinmoduleentity::hasComponent(const QString name)
     return m_componentList.contains(name);
 }
 
-cVeinModuleComponent::WPtr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, bool p_readOnly)
+cVeinModuleComponent::WPtr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction)
 {
     if(!hasComponent(p_name)) {
-        cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_readOnly), &QObject::deleteLater);
+        cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_direction), &QObject::deleteLater);
         m_componentList[tmpPtr->getName()]=tmpPtr;
         return tmpPtr;
     }
