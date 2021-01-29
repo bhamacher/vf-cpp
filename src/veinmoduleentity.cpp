@@ -130,12 +130,13 @@ VeinRpcFuture::Ptr veinmoduleentity::invokeRPC(int p_entityId, const QString &p_
 bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
 {
     bool retVal = false;
-    if (p_cEvent->eventData()->type() == VeinComponent::ComponentData::dataType())
-    {
+    switch (p_cEvent->eventData()->type()) {
+    case VeinComponent::ComponentData::dataType():
         retVal=processComponentData(p_cEvent);
-    }else if(p_cEvent->eventData()->type() == VeinComponent::RemoteProcedureData::dataType())
-    {
+        break;
+    case VeinComponent::RemoteProcedureData::dataType():
         retVal=processRpcData(p_cEvent);
+        break;
     }
     return retVal;
 }
@@ -148,9 +149,9 @@ bool veinmoduleentity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
     VeinComponent::ComponentData* cData = static_cast<VeinComponent::ComponentData*> (p_cEvent->eventData());
     cName = cData->componentName();
     entityId = cData->entityId();
-    // Managed by this entity
-    if (p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION)
-    {
+    switch (p_cEvent->eventSubtype()) {
+    case VeinEvent::CommandEvent::EventSubtype::TRANSACTION: // handles components located in this entitie
+
         if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET)
         {
             if(m_componentList.contains(cName) && entityId == m_entityId){
@@ -162,9 +163,10 @@ bool veinmoduleentity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
             //Nothing to do here. This is a placeholder in case the storage will not handle FETCH
             //events in Future anymore.
         }
-        // managed by other entites
 
-    }else if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::NOTIFICATION){
+        break;
+    case VeinEvent::CommandEvent::EventSubtype::NOTIFICATION: // handles informations about components located in other entities
+
         if(m_watchList.contains(entityId)){
             if(m_watchList[entityId].contains(cName)){
                 if(cData->eventCommand() == VeinComponent::ComponentData::Command::CCMD_SET ||
@@ -174,6 +176,8 @@ bool veinmoduleentity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
                 }
             }
         }
+
+        break;
     }
     return retVal;
 }
@@ -184,7 +188,11 @@ bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
     VeinComponent::RemoteProcedureData *rpcData=nullptr;
     rpcData = static_cast<VeinComponent::RemoteProcedureData *>(p_cEvent->eventData());
     // RPC located in this module
-    if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::TRANSACTION){
+
+
+    switch (p_cEvent->eventSubtype()) {
+    case VeinEvent::CommandEvent::EventSubtype::TRANSACTION: // Handles Rpcs located in this entity
+
         if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
             if(m_rpcList.contains(rpcData->procedureName()))
             {
@@ -211,8 +219,10 @@ bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
                 emit sigSendEvent(errorEvent);
             }
         }
-    // Answers provided by rpcs located in other modules
-    }else if(p_cEvent->eventSubtype() == VeinEvent::CommandEvent::EventSubtype::NOTIFICATION){
+
+        break;
+    case VeinEvent::CommandEvent::EventSubtype::NOTIFICATION: // handles resutl data provided by other entities
+
         int tmpEntId=rpcData->entityId();
         QString tmpProcName=rpcData->procedureName();
         QUuid tmpUid= rpcData->invokationData().value(RemoteProcedureData::s_callIdString).toUuid();
@@ -232,6 +242,8 @@ bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
                 }
             }
         }
+
+        break;
     }
     return retVal;
 }
