@@ -21,7 +21,7 @@ public:
 
     enum class TakeOver{
         direct,                     // takes the value but does not create sigValueChanged
-        directWithNotification,     // takes the value and creates sigValueChanged
+        directWithNotification,     // takes the value and creates sigValueChanged (ends up with two signals)
         onNotification              // only send the transaction and waits for confirmation
                                     // Get value will return the old value until the new value is confirmed.
                                     // That might be never!
