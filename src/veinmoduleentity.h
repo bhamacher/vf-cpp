@@ -85,8 +85,27 @@ public:
     bool unWatchComponent(int p_EntityId, const QString &p_componentName);
 
     VeinRpcFuture::Ptr invokeRPC(int p_entityId,const QString &p_procedureName, const QVariantMap &p_parameters);
+public:
+    QMap<QString, cVeinModuleComponent::Ptr> getComponentList() const;
+    void setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value);
+    QMap<QString, cVeinModuleRpc::Ptr> getRpcList() const;
+    void setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value);
+    QMap<int, QMap<QString,VeinProxyComp::Ptr> > getWatchList() const;
+    void setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> >  &watchList);
+    int getEntitiyId() const;
+public slots:
+    /**
+     * @brief initModule
+     * call once after constructor
+     */
+    void initModule();
+signals:
+    void sigWatchedComponentChanged(int p_entityId,QString p_componentName,QVariant p_value);
 private:
     bool processCommandEvent(VeinEvent::CommandEvent *p_cEvent);
+
+    bool processComponentData(VeinEvent::CommandEvent *p_cEvent);
+    bool processRpcData(VeinEvent::CommandEvent *p_cEvent);
 private:
     /**
      * @brief m_componentList
@@ -116,23 +135,7 @@ private:
      * The entites unique entity id
      */
     int m_entityId;
-public:
-    QMap<QString, cVeinModuleComponent::Ptr> getComponentList() const;
-    void setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value);
-    QMap<QString, cVeinModuleRpc::Ptr> getRpcList() const;
-    void setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value);
-    QMap<int, QMap<QString,VeinProxyComp::Ptr> > getWatchList() const;
-    void setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> >  &watchList);
-    int getEntitiyId() const;
-signals:
-    void sigWatchedComponentChanged(int p_entityId,QString p_componentName,QVariant p_value);
-public slots:
-    /**
-     * @brief initModule
-     * call once after constructor
-     */
-    void initModule();
-private slots:
+
 
 };
 
