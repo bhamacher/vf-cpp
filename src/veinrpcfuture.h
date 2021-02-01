@@ -31,7 +31,7 @@ public:
     };
 
     explicit VeinRpcFuture(int p_rpcEntityId, QString p_rpcName, QUuid p_rpcUid);
-
+    ~VeinRpcFuture();
 
     QVariant Return();
 
@@ -46,9 +46,9 @@ public:
     QVariantMap getResultData() const;
 
 signals:
-    void sigRPCFinished(VeinRpcFuture::Ptr p_future);
-    void sigRPCProgress(VeinRpcFuture::Ptr p_future);
-    void sigRPCError(VeinRpcFuture::Ptr p_future);
+    void sigRPCFinished(QUuid p_rpcUniqueId);
+    void sigRPCProgress(QUuid p_rpcUniqueId);
+    void sigRPCError(QUuid p_rpcUniqueId);
 private:
     void processRpcData(VeinComponent::RemoteProcedureData *p_rpcData);
 private:

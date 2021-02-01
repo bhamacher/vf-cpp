@@ -14,6 +14,11 @@ VeinRpcFuture::VeinRpcFuture(int p_rpcEntityId, QString p_rpcName, QUuid p_rpcUi
 
 }
 
+VeinRpcFuture::~VeinRpcFuture()
+{
+
+}
+
 QVariant VeinRpcFuture::Return()
 {
     if(m_resultData.contains("RemoteProcedureData::Return")){
@@ -39,13 +44,13 @@ void VeinRpcFuture::processRpcData(RemoteProcedureData *p_rpcData)
         case RemoteProcedureData::Command::RPCMD_RESULT:
         {
             m_status=RpcStatus::finished;
-            emit sigRPCFinished(VeinRpcFuture::Ptr(this));
+            emit sigRPCFinished(m_rpcUniqueId);
             break;
         }
         case RemoteProcedureData::Command::RPCMD_PROGRESS:
         {
             m_status=RpcStatus::inProgress;
-            emit sigRPCProgress(VeinRpcFuture::Ptr(this));
+            emit sigRPCProgress(m_rpcUniqueId);
             break;
         }
         default:
@@ -53,7 +58,7 @@ void VeinRpcFuture::processRpcData(RemoteProcedureData *p_rpcData)
         }
     }  catch (...) {
         m_status=RpcStatus::error;
-        emit sigRPCError(VeinRpcFuture::Ptr(this));
+        emit sigRPCError(m_rpcUniqueId);
     }
 
 
