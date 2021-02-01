@@ -54,12 +54,17 @@ bool veinmoduleentity::processEvent(QEvent *t_event)
 
         evData = cEvent->eventData();
         Q_ASSERT(evData != nullptr);
-        retVal = processCommandEvent(cEvent);
+        //if(evData->entityId() == m_entityId)
+        //{
+            // does the actual handling if event is of the correct type and
+            // addresses this entity
+            retVal = processCommandEvent(cEvent);
+        //}
     }
     return retVal;
 }
 
-VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QString &p_SubComponentName)
+VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QString &p_SubComponentName, const QString p_proxyCompName, VeinProxyComp::TakeOver p_takeOver)
 {
     // check if entite already exists in watchlist
     if(!m_watchList.contains(p_SubEntityId)){
@@ -68,8 +73,9 @@ VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QS
     // check if component is already subscribed. Create if not.
     // If the component is already subscribed we can just return the already exyisting component
     if(!m_watchList[p_SubEntityId].contains(p_SubComponentName)){
-        VeinProxyComp::Ptr tmpPtr= VeinProxyComp::Ptr(new VeinProxyComp(m_entityId,this,p_SubEntityId,p_SubComponentName));
+        VeinProxyComp::Ptr tmpPtr= VeinProxyComp::Ptr(new VeinProxyComp(m_entityId,this,p_SubEntityId,p_SubComponentName,p_proxyCompName,QVariant(""),p_takeOver));
         m_watchList[p_SubEntityId][p_SubComponentName]=tmpPtr;
+        tmpPtr->init();
     }
     return m_watchList[p_SubEntityId][p_SubComponentName];
 }
@@ -215,7 +221,7 @@ bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
         }
 
         break;
-    case VeinEvent::CommandEvent::EventSubtype::NOTIFICATION: // handles resutl data provided by other entities
+    case VeinEvent::CommandEvent::EventSubtype::NOTIFICATION: // handles result data provided by other entities
 
         int tmpEntId=rpcData->entityId();
         QString tmpProcName=rpcData->procedureName();

@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <QList>
@@ -75,7 +75,7 @@ public:
      *
      * @todo implement proxy object as return
      */
-    VeinProxyComp::WPtr watchComponent(int p_SubEntityId, const QString &p_SubComponentName);
+    VeinProxyComp::WPtr watchComponent(int p_SubEntityId, const QString &p_SubComponentName,const QString p_proxyCompName,VeinProxyComp::TakeOver p_takeOver=VeinProxyComp::TakeOver::onNotification);
     /**
      * @brief unWatchComponent
      * @param p_EntityId

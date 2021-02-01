@@ -35,8 +35,8 @@ public:
      * @param SubCompName the name of the original component
      * @param initval the proxy component value until the first notification comes in
      */
-    explicit VeinProxyComp(int p_entityId, VeinEvent::EventSystem *p_eventsystem,int p_subEntName ,QString p_subCompName, QVariant p_initval=QVariant(), TakeOver p_defaultTake=TakeOver::onNotification);
-
+    explicit VeinProxyComp(int p_entityId, QPointer<veinmoduleentity> p_eventsystem,int p_subEntName ,QString p_subCompName,QString p_proxyCompName, QVariant p_initval=QVariant(), TakeOver p_defaultTake=TakeOver::onNotification);
+    void init();
     /**
      * @brief setValueByEvent
      * This class is meant for use in generic EventSystem classes and should be used in
@@ -61,11 +61,12 @@ signals:
 
 private:
     int m_entityId;
-    VeinEvent::EventSystem *m_pEventSystem;
+    QPointer<veinmoduleentity> m_pEventSystem;
     int m_subEntityId;
     QString m_subComponentName;
     QVariant m_value;
     TakeOver m_defaultTake;
+    cVeinModuleComponent::WPtr m_realComponent;
 
 protected:
     /**
@@ -73,7 +74,7 @@ protected:
      * sends data to vein, if something changed
      * @param vcmd
      */
-    virtual void sendTransaction(VeinComponent::ComponentData::Command vcmd);
+    virtual void sendTransaction(VeinComponent::ComponentData::Command vcmd, QVariant p_value);
 
 };
 
