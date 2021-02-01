@@ -2,15 +2,26 @@
 #define VEINPROXYCOMP_H
 
 #include <QObject>
+#include <QPointer>
 
 #include <vcmp_componentdata.h>
-#include <ve_eventsystem.h>
 
 #include "veinabstractcomponent.h"
+#include "veinmodulecomponent.h"
 
 namespace VfCpp {
 
+#ifdef ModTest
+    #define d_direct 0
+    #define d_directWithNotification 2
+    #define d_onNotification 1
+#else
+    #define d_direct 0
+    #define d_directWithNotification 1
+    #define d_onNotification 2
+#endif
 
+class veinmoduleentity;
 
 class VeinProxyComp : public VeinAbstractComponent
 {
@@ -20,9 +31,9 @@ public:
     typedef  QWeakPointer< VeinProxyComp > WPtr;
 
     enum class TakeOver{
-        direct,                     // takes the value but does not create sigValueChanged
-        directWithNotification,     // takes the value and creates sigValueChanged (ends up with two signals)
-        onNotification              // only send the transaction and waits for confirmation
+        direct=d_direct,                     // takes the value but does not create sigValueChanged
+        directWithNotification=d_directWithNotification,     // takes the value and creates sigValueChanged (ends up with two signals)
+        onNotification=d_onNotification             // only send the transaction and waits for confirmation
                                     // Get value will return the old value until the new value is confirmed.
                                     // That might be never!
     };
