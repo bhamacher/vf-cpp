@@ -1,5 +1,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QValidator>
 
 #include <vcmp_componentdata.h>
 #include <vcmp_errordata.h>
@@ -13,7 +14,7 @@ using namespace VfCpp;
 
 
 cVeinModuleComponent::cVeinModuleComponent(int entityId, VeinEvent::EventSystem *eventsystem, QString name, QVariant initval, Direction p_direction)
-    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval), m_direction(p_direction)
+    :m_nEntityId(entityId), m_pEventSystem(eventsystem), m_sName(name), m_vValue(initval), m_direction(p_direction), m_validator(nullptr)
 {
     sendNotification(VeinComponent::ComponentData::Command::CCMD_ADD);
 }
@@ -74,12 +75,34 @@ void cVeinModuleComponent::setError()
 
 }
 
+QPointer<QValidator> cVeinModuleComponent::getValidator() const
+{
+    return m_validator;
+}
+
+void cVeinModuleComponent::setValidator(const QPointer<QValidator> &validator)
+{
+    m_validator = validator;
+    if(!m_validator.isNull()){
+        m_validator->setParent(this);
+    }
+}
+
 void cVeinModuleComponent::setValueByEvent(QVariant value)
 {
     if(value != getValue()){
         if(m_direction == Direction::in || m_direction == Direction::inOut){
-            m_vValue = value;
-            sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
+            if(!m_validator.isNull()){
+                QString valValue=value.toString();
+                int valPos=0;
+                if(m_validator->validate(valValue,valPos) == QValidator::State::Acceptable){
+                    m_vValue = value;
+                    sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
+                }
+            }else{
+                m_vValue = value;
+                sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
+            }
         }
         emit sigValueChanged(value);
     }

@@ -24,7 +24,7 @@ include(FeatureSummary)
 include(GNUInstallDirs)
 
 #Find dependecies
-find_package(Qt5 COMPONENTS Core CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui CONFIG REQUIRED)
 find_package(VfComponent REQUIRED)
 find_package(VfHelpers REQUIRED)
 find_package(VfEvent REQUIRED)
@@ -58,6 +58,7 @@ add_library(VfCpp SHARED
 target_link_libraries(VfCpp 
     PRIVATE
     Qt5::Core
+    Qt5::Gui
     VeinMeta::VfHelpers
     VeinMeta::VfEvent
     VeinMeta::VfComponent

@@ -2,6 +2,7 @@
 #define VEINMODULECOMPONENT_H
 
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QVariant>
 #include <QJsonArray>
@@ -9,11 +10,15 @@
 #include <QList>
 #include <QUuid>
 
+
 #include <vcmp_componentdata.h>
 #include <vcmp_errordata.h>
 #include <ve_eventsystem.h>
 
 #include "veinabstractcomponent.h"
+
+class QValidator;
+
 
 namespace VfCpp {
 /**
@@ -66,6 +71,9 @@ public:
     QVariant getValue();
     QString getName();
 
+    QPointer<QValidator> getValidator() const;
+    void setValidator(const QPointer<QValidator> &validator);
+
 signals:
     void sigValueChanged(QVariant); // we connect here if we want to do something on changed values
     void sigValueQuery(QVariant); // we connect here if we want to read a value before returning data from storage ...perhaps with parameter
@@ -80,6 +88,7 @@ protected:
     QString m_sName;
     QVariant m_vValue;
     Direction m_direction;
+    QPointer<QValidator> m_validator;
 
 protected:
     /**
