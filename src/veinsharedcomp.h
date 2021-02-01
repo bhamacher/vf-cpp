@@ -54,7 +54,7 @@ public:
 
     T value(){
         if(m_component != nullptr){
-            return m_component->getValue().value<T>();
+            return m_component.toStrongRef()->getValue().value<T>();
         }
         return T();
     };
@@ -65,7 +65,7 @@ public:
      */
     void setValue(T p_val){
        if(m_component != nullptr){
-            m_component->setValue(p_val);
+            m_component.toStrongRef()->setValue(p_val);
        }
     };
 
