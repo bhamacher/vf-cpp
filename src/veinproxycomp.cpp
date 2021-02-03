@@ -11,13 +11,15 @@ VeinProxyComp::VeinProxyComp(int p_entityId, QPointer<VeinModuleEntity> p_events
     : m_entityId(p_entityId), m_pEventSystem(p_eventsystem), m_subEntityId(p_subEntId), m_subComponentName(p_subCompName), m_value(p_initval), m_defaultTake(p_defaultTake)
 {
 
-    // We want to see the proxy Component from outside. Without the knowing of the user a
-    // real component is created showing the status of the proxy
-    // @attention: The created component is out only (it is not possible to write it)
+    // We want to see the proxy Component from outside. Without the user knowing about it. (mirrorcomponent)
+    // A real component is created showing the status of the proxy. The real component will be removed with the proxyComponent.
+    // The component is inOut. But the Validator prevetns it from taking any value. If the original component is in or inOut
+    // it will send a notification. This notification will chnage th value.
     m_realComponent=m_pEventSystem->createComponent(p_proxyCompName,p_initval,cVeinModuleComponent::Direction::inOut);
     m_realComponent.toStrongRef()->setValidator(new VeinProxyValidator(this));
 
-
+    // connection values coming from the original component to the hidden mirror component and dat coming from the
+    // mirrorcomponent to the original component
     connect(this,&VeinAbstractComponent::sigValueChanged,m_realComponent.toStrongRef().data(),&VeinAbstractComponent::setValue);
     connect(m_realComponent.toStrongRef().data(),&VeinAbstractComponent::sigValueChanged,this,&VeinAbstractComponent::setValue);
 }
@@ -29,6 +31,7 @@ VeinProxyComp::~VeinProxyComp()
 
 void VeinProxyComp::init()
 {
+    //Fetching data from original component
     VeinEvent::CommandEvent *cEvent = nullptr;
     VeinComponent::ComponentData *cData = nullptr;
     cData = new VeinComponent::ComponentData();

@@ -7,19 +7,24 @@ using namespace VfCpp;
 using namespace VeinComponent;
 using namespace VeinEvent;
 
+//@TODO create init signal. It might be unsafe to use sigAttach from the outside
 VeinModuleEntity::VeinModuleEntity(int p_entityId,QObject *p_parent):
     VeinEvent::EventSystem(p_parent),
     m_entityId(p_entityId)
 {
+    // init enitie, when it is attached to the eventhandler.
     QObject::connect(this,&VeinModuleEntity::sigAttached,this,&VeinModuleEntity::initModule);
 }
 
 VeinModuleEntity::~VeinModuleEntity()
 {
+    // remove all components. Some of them need to
+    // send events before the entitie is removed
     m_watchList.clear();
     m_componentList.clear();
     m_rpcList.clear();
 
+    // unregister entity
     if(m_attached){
         VeinComponent::EntityData *eData = new VeinComponent::EntityData();
         eData->setCommand(VeinComponent::EntityData::Command::ECMD_REMOVE);
@@ -27,6 +32,7 @@ VeinModuleEntity::~VeinModuleEntity()
         VeinEvent::CommandEvent *tmpEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
         emit sigSendEvent(tmpEvent);
     }
+    // remove entitie from eventhandler
     m_eventHandler->removeSubsystem(this);
 }
 
@@ -57,10 +63,11 @@ bool VeinModuleEntity::removeComponent(const QString &p_name)
     return false;
 }
 
-
+//@TODO prevent regiterig two rpcs with the same name (parameters wont have any impact on it anymore)
 cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
 {
     cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter,p_threaded),&QObject::deleteLater);
+    // As key we do only save the function name without parameters
     m_rpcList[tmpPtr->rpcName().split("(")[0]]=tmpPtr;
     return tmpPtr;
 }
@@ -68,6 +75,7 @@ cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_f
 bool VeinModuleEntity::processEvent(QEvent *p_event)
 {
     bool retVal = false;
+    // We only process CommandEvents. Everthing else is not VEIN
     if(p_event->type()==VeinEvent::CommandEvent::eventType())
     {
         VeinEvent::CommandEvent *cEvent = nullptr;
@@ -79,6 +87,7 @@ bool VeinModuleEntity::processEvent(QEvent *p_event)
         Q_ASSERT(evData != nullptr);
         retVal = processCommandEvent(cEvent);
 
+        // forword signal for manual computation
         emit sigEvent(*p_event);
 
     }
@@ -146,7 +155,6 @@ VeinRpcFuture::Ptr VeinModuleEntity::invokeRPC(int p_entityId, const QString &p_
     return tmpFuture;
 }
 
-//@TODO check if notification is reachable
 //@TODO implement and handle active objects
 bool VeinModuleEntity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
 {
@@ -215,6 +223,8 @@ bool VeinModuleEntity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
     case VeinEvent::CommandEvent::EventSubtype::TRANSACTION: // Handles Rpcs located in this entity
         if(rpcData->entityId() == m_entityId){
             if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
+                // Comparing drpc name with available rpc list.
+                // Comparing only the function name wihtout parameters.
                 if(m_rpcList.contains(rpcData->procedureName().split("(")[0]))
                 {
                     retVal = true;

@@ -9,6 +9,8 @@ using namespace VfCpp;
 cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem, QObject *p_object, QString p_funcName, QMap<QString,QString> p_parameter,bool p_threaded)
     : m_object(p_object), m_function(p_funcName), m_parameter(p_parameter), m_nEntityId(entityId), m_pEventSystem(eventsystem),m_threaded(p_threaded)
 {
+    // create rpcname with all parameters
+    // We do this because we want to see needed parameters inside the debugger.
     m_rpcName=m_function;
     m_rpcName.append("(");
     for(QString param : m_parameter.keys()){
@@ -22,6 +24,7 @@ cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem
     }
     m_rpcName.append(")");
 
+    // register rpc
     VeinComponent::RemoteProcedureData *rpcData = new VeinComponent::RemoteProcedureData();
     rpcData->setEntityId(m_nEntityId);
     rpcData->setCommand(VeinComponent::RemoteProcedureData::Command::RPCMD_REGISTER);
@@ -46,6 +49,7 @@ QString cVeinModuleRpc::rpcName() const
 
 void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &p_rpcParameters)
 {
+    // here is a signal called instead of callFunctionPrivat, because we do not want to block the eventloop for to long.
     emit callFunctionPrivateSignal(p_callId,p_peerId,p_rpcParameters);
 };
 
@@ -107,6 +111,7 @@ void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_p
         }
     };
 
+    // start in thread or call directly (default is in thread)
     if(m_threaded){
         QtConcurrent::run(rpcHandling);
     }else{

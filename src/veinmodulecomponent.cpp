@@ -99,10 +99,12 @@ void cVeinModuleComponent::setValidator(const QPointer<QValidator> &p_validator)
 void cVeinModuleComponent::setValueByEvent(QVariant p_value)
 {
     if(p_value != getValue()){
+        // set only if component is an in or in/out interface
         if(m_direction == Direction::in || m_direction == Direction::inOut){
             if(!m_validator.isNull()){
                 QString valValue=p_value.toString();
                 int valPos=0;
+                // if there is a validator set data only if validator returns true.
                 if(m_validator->validate(valValue,valPos) == QValidator::State::Acceptable){
                     m_vValue = p_value;
                     sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
