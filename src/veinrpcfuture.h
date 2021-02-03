@@ -12,14 +12,14 @@
 
 namespace VfCpp {
 
-class veinmoduleentity;
+class VeinModuleEntity;
 
 
 class VeinRpcFuture : public QObject
 {
     Q_OBJECT
 public:
-    friend class veinmoduleentity;
+    friend class VeinModuleEntity;
 
 
     typedef QSharedPointer<VeinRpcFuture> Ptr;

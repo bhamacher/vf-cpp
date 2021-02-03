@@ -7,7 +7,7 @@
 
 using namespace VfCpp;
 
-VeinProxyComp::VeinProxyComp(int p_entityId, QPointer<veinmoduleentity> p_eventsystem,int p_subEntId ,QString p_subCompName,QString p_proxyCompName, QVariant p_initval, TakeOver p_defaultTake)
+VeinProxyComp::VeinProxyComp(int p_entityId, QPointer<VeinModuleEntity> p_eventsystem,int p_subEntId ,QString p_subCompName,QString p_proxyCompName, QVariant p_initval, TakeOver p_defaultTake)
     : m_entityId(p_entityId), m_pEventSystem(p_eventsystem), m_subEntityId(p_subEntId), m_subComponentName(p_subCompName), m_value(p_initval), m_defaultTake(p_defaultTake)
 {
 

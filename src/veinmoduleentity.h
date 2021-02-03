@@ -24,15 +24,15 @@ namespace VfCpp {
  * Must be added to Eventsystem manually.
  *
  */
-class veinmoduleentity : public VeinEvent::EventSystem
+class VeinModuleEntity : public VeinEvent::EventSystem
 {
     Q_OBJECT
 public:
-    typedef QSharedPointer<veinmoduleentity> Ptr;
-    typedef QWeakPointer<veinmoduleentity> WPtr;
+    typedef QSharedPointer<VeinModuleEntity> Ptr;
+    typedef QWeakPointer<VeinModuleEntity> WPtr;
 
-    veinmoduleentity(int p_entityId,QObject *p_parent=nullptr);
-    ~veinmoduleentity();
+    VeinModuleEntity(int p_entityId,QObject *p_parent=nullptr);
+    ~VeinModuleEntity();
     /**
      * @brief hasComponent checks if component is in m_componentList
      * @param [in] name: the component name
@@ -75,14 +75,14 @@ public:
      *
      * @todo implement proxy object as return
      */
-    VeinProxyComp::WPtr watchComponent(int p_SubEntityId, const QString &p_SubComponentName,const QString p_proxyCompName,VeinProxyComp::TakeOver p_takeOver=VeinProxyComp::TakeOver::onNotification);
+    VeinProxyComp::WPtr createProxyComponent(int p_SubEntityId, const QString &p_SubComponentName,const QString p_proxyCompName,VeinProxyComp::TakeOver p_takeOver=VeinProxyComp::TakeOver::onNotification);
     /**
      * @brief unWatchComponent
      * @param p_EntityId
      * @param p_componentName
      * @return true on success
      */
-    bool unWatchComponent(int p_EntityId, const QString &p_componentName);
+    bool removeProxyComponent(int p_entitId,const QString &p_componentName);
 
     VeinRpcFuture::Ptr invokeRPC(int p_entityId,const QString &p_procedureName, const QVariantMap &p_parameters);
 public:

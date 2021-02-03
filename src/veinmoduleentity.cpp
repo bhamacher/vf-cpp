@@ -6,26 +6,26 @@ using namespace VfCpp;
 using namespace VeinComponent;
 using namespace VeinEvent;
 
-veinmoduleentity::veinmoduleentity(int p_entityId,QObject *p_parent):
+VeinModuleEntity::VeinModuleEntity(int p_entityId,QObject *p_parent):
     VeinEvent::EventSystem(p_parent),
     m_entityId(p_entityId)
 {
-    //QObject::connect(this,&veinmoduleentity::sigAttached,this,&veinmoduleentity::initModule);
+    QObject::connect(this,&VeinModuleEntity::sigAttached,this,&VeinModuleEntity::initModule);
 }
 
-veinmoduleentity::~veinmoduleentity()
+VeinModuleEntity::~VeinModuleEntity()
 {
 }
 
-bool veinmoduleentity::hasComponent(const QString name)
+bool VeinModuleEntity::hasComponent(const QString name)
 {
     return m_componentList.contains(name);
 }
 
-cVeinModuleComponent::WPtr  veinmoduleentity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction)
+cVeinModuleComponent::WPtr  VeinModuleEntity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction)
 {
     if(!hasComponent(p_name)) {
-        cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_direction), &QObject::deleteLater);
+        cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_direction));
         m_componentList[tmpPtr->getName()]=tmpPtr;
         return tmpPtr;
     }
@@ -35,14 +35,15 @@ cVeinModuleComponent::WPtr  veinmoduleentity::createComponent(QString p_name, QV
 }
 
 
-cVeinModuleRpc::WPtr  veinmoduleentity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
+
+cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
 {
     cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter,p_threaded),&QObject::deleteLater);
     m_rpcList[tmpPtr->rpcName()]=tmpPtr;
     return tmpPtr;
 }
 
-bool veinmoduleentity::processEvent(QEvent *t_event)
+bool VeinModuleEntity::processEvent(QEvent *t_event)
 {
     bool retVal = false;
     if(t_event->type()==VeinEvent::CommandEvent::eventType())
@@ -64,7 +65,7 @@ bool veinmoduleentity::processEvent(QEvent *t_event)
     return retVal;
 }
 
-VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QString &p_SubComponentName, const QString p_proxyCompName, VeinProxyComp::TakeOver p_takeOver)
+VeinProxyComp::WPtr VeinModuleEntity::createProxyComponent(int p_SubEntityId, const QString &p_SubComponentName, const QString p_proxyCompName, VeinProxyComp::TakeOver p_takeOver)
 {
     // check if entite already exists in watchlist
     if(!m_watchList.contains(p_SubEntityId)){
@@ -80,19 +81,19 @@ VeinProxyComp::WPtr veinmoduleentity::watchComponent(int p_SubEntityId, const QS
     return m_watchList[p_SubEntityId][p_SubComponentName];
 }
 
-bool veinmoduleentity::unWatchComponent(int p_EntityId, const QString &p_componentName)
+bool VeinModuleEntity::removeProxyComponent(int p_entityId, const QString &p_componentName)
 {
     bool retVal=false;
-    if(m_watchList.contains(p_EntityId)){
-        if(m_watchList[p_EntityId].contains(p_componentName)){
-            m_watchList[p_EntityId].remove(p_componentName);
+    if(m_watchList.contains(p_entityId)){
+        if(m_watchList[p_entityId].contains(p_componentName)){
+            m_watchList[p_entityId].remove(p_componentName);
             retVal=true;
         }
     }
     return retVal;
 }
 
-VeinRpcFuture::Ptr veinmoduleentity::invokeRPC(int p_entityId, const QString &p_procedureName, const QVariantMap &p_parameters)
+VeinRpcFuture::Ptr VeinModuleEntity::invokeRPC(int p_entityId, const QString &p_procedureName, const QVariantMap &p_parameters)
 {
     QUuid rpcIdentifier;
     rpcIdentifier=QUuid::createUuid();
@@ -127,7 +128,7 @@ VeinRpcFuture::Ptr veinmoduleentity::invokeRPC(int p_entityId, const QString &p_
 
 //@TODO check if notification is reachable
 //@TODO implement and handle active objects
-bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
+bool VeinModuleEntity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
 {
     bool retVal = false;
     switch (p_cEvent->eventData()->type()) {
@@ -141,7 +142,7 @@ bool veinmoduleentity::processCommandEvent(VeinEvent::CommandEvent *p_cEvent)
     return retVal;
 }
 
-bool veinmoduleentity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
+bool VeinModuleEntity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
 {
     bool retVal;
     QString cName;
@@ -182,7 +183,7 @@ bool veinmoduleentity::processComponentData(VeinEvent::CommandEvent *p_cEvent)
     return retVal;
 }
 
-bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
+bool VeinModuleEntity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
 {
     bool retVal;
     VeinComponent::RemoteProcedureData *rpcData=nullptr;
@@ -248,12 +249,12 @@ bool veinmoduleentity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
     return retVal;
 }
 
-int veinmoduleentity::getEntitiyId() const
+int VeinModuleEntity::getEntitiyId() const
 {
     return m_entityId;
 }
 
-void veinmoduleentity::initModule()
+void VeinModuleEntity::initModule()
 {
     VeinComponent::EntityData *eData = new VeinComponent::EntityData();
     eData->setCommand(VeinComponent::EntityData::Command::ECMD_ADD);
@@ -262,32 +263,32 @@ void veinmoduleentity::initModule()
     emit sigSendEvent(tmpEvent);
 }
 
-QMap<QString, cVeinModuleRpc::Ptr> veinmoduleentity::getRpcList() const
+QMap<QString, cVeinModuleRpc::Ptr> VeinModuleEntity::getRpcList() const
 {
     return m_rpcList;
 }
 
-QMap<int, QMap<QString,VeinProxyComp::Ptr> > veinmoduleentity::getWatchList() const
+QMap<int, QMap<QString,VeinProxyComp::Ptr> > VeinModuleEntity::getWatchList() const
 {
     return m_watchList;
 }
 
-void veinmoduleentity::setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> > &watchList)
+void VeinModuleEntity::setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> > &watchList)
 {
     m_watchList = watchList;
 }
 
-void veinmoduleentity::setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value)
+void VeinModuleEntity::setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value)
 {
     m_rpcList = value;
 }
 
-QMap<QString, cVeinModuleComponent::Ptr> veinmoduleentity::getComponentList() const
+QMap<QString, cVeinModuleComponent::Ptr> VeinModuleEntity::getComponentList() const
 {
     return m_componentList;
 }
 
-void veinmoduleentity::setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value)
+void VeinModuleEntity::setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value)
 {
     m_componentList = value;
 }

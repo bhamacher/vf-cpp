@@ -21,7 +21,7 @@ namespace VfCpp {
     #define d_onNotification 2
 #endif
 
-class veinmoduleentity;
+class VeinModuleEntity;
 
 class VeinProxyComp : public VeinAbstractComponent
 {
@@ -46,7 +46,8 @@ public:
      * @param SubCompName the name of the original component
      * @param initval the proxy component value until the first notification comes in
      */
-    explicit VeinProxyComp(int p_entityId, QPointer<veinmoduleentity> p_eventsystem,int p_subEntName ,QString p_subCompName,QString p_proxyCompName, QVariant p_initval=QVariant(), TakeOver p_defaultTake=TakeOver::onNotification);
+    explicit VeinProxyComp(int p_entityId, QPointer<VeinModuleEntity> p_eventsystem,int p_subEntName ,QString p_subCompName,QString p_proxyCompName, QVariant p_initval=QVariant(), TakeOver p_defaultTake=TakeOver::onNotification);
+     ~VeinProxyComp();
     void init();
     /**
      * @brief setValueByEvent
@@ -66,13 +67,14 @@ public slots:
     void setValue(QVariant p_value, TakeOver p_takeOver); // here we have to emit event for notification
     void setValue(QVariant p_value) override;
     void setError(); // here we have to emit event for error notification
+    void removeComponent();
 
 signals:
 
 
 private:
     int m_entityId;
-    QPointer<veinmoduleentity> m_pEventSystem;
+    QPointer<VeinModuleEntity> m_pEventSystem;
     int m_subEntityId;
     QString m_subComponentName;
     QVariant m_value;
