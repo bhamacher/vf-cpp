@@ -61,7 +61,7 @@ bool VeinModuleEntity::removeComponent(const QString &p_name)
 cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)
 {
     cVeinModuleRpc::Ptr tmpPtr = cVeinModuleRpc::Ptr(new cVeinModuleRpc(m_entityId,this,p_object,p_funcName,p_parameter,p_threaded),&QObject::deleteLater);
-    m_rpcList[tmpPtr->rpcName()]=tmpPtr;
+    m_rpcList[tmpPtr->rpcName().split("(")[0]]=tmpPtr;
     return tmpPtr;
 }
 
@@ -215,34 +215,34 @@ bool VeinModuleEntity::processRpcData(VeinEvent::CommandEvent *p_cEvent)
 
     switch (p_cEvent->eventSubtype()) {
     case VeinEvent::CommandEvent::EventSubtype::TRANSACTION: // Handles Rpcs located in this entity
-
-        if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
-            if(m_rpcList.contains(rpcData->procedureName()))
-            {
-                retVal = true;
-                const QUuid callId = rpcData->invokationData().value(VeinComponent::RemoteProcedureData::s_callIdString).toUuid();
-                Q_ASSERT(callId.isNull() == false);
-                m_rpcList[rpcData->procedureName()]->callFunction(callId,p_cEvent->peerId(),rpcData->invokationData());
-                p_cEvent->accept();
-            }
-            else //unknown procedure
-            {
-                retVal = true;
-                qWarning() << "No remote procedure with entityId:" << m_entityId << "name:" << rpcData->procedureName();
-                VF_ASSERT(false, QStringC(QString("No remote procedure with entityId: %1 name: %2").arg(m_entityId).arg(rpcData->procedureName())));
-                VeinComponent::ErrorData *eData = new VeinComponent::ErrorData();
-                eData->setEntityId(m_entityId);
-                eData->setErrorDescription(QString("No remote procedure with name: %1").arg(rpcData->procedureName()));
-                eData->setOriginalData(rpcData);
-                eData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
-                eData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
-                VeinEvent::CommandEvent *errorEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
-                errorEvent->setPeerId(p_cEvent->peerId());
-                p_cEvent->accept();
-                emit sigSendEvent(errorEvent);
+        if(rpcData->entityId() == m_entityId){
+            if(rpcData->command() == VeinComponent::RemoteProcedureData::Command::RPCMD_CALL){
+                if(m_rpcList.contains(rpcData->procedureName().split("(")[0]))
+                {
+                    retVal = true;
+                    const QUuid callId = rpcData->invokationData().value(VeinComponent::RemoteProcedureData::s_callIdString).toUuid();
+                    Q_ASSERT(callId.isNull() == false);
+                    m_rpcList[rpcData->procedureName().split("(")[0]]->callFunction(callId,p_cEvent->peerId(),rpcData->invokationData());
+                    p_cEvent->accept();
+                }
+                else //unknown procedure
+                {
+                    retVal = true;
+                    qWarning() << "No remote procedure with entityId:" << m_entityId << "name:" << rpcData->procedureName();
+                    VF_ASSERT(false, QStringC(QString("No remote procedure with entityId: %1 name: %2").arg(m_entityId).arg(rpcData->procedureName())));
+                    VeinComponent::ErrorData *eData = new VeinComponent::ErrorData();
+                    eData->setEntityId(m_entityId);
+                    eData->setErrorDescription(QString("No remote procedure with name: %1").arg(rpcData->procedureName()));
+                    eData->setOriginalData(rpcData);
+                    eData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
+                    eData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
+                    VeinEvent::CommandEvent *errorEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
+                    errorEvent->setPeerId(p_cEvent->peerId());
+                    p_cEvent->accept();
+                    emit sigSendEvent(errorEvent);
+                }
             }
         }
-
         break;
     case VeinEvent::CommandEvent::EventSubtype::NOTIFICATION: // handles result data provided by other entities
 
