@@ -102,7 +102,17 @@ public slots:
      */
     void initModule();
 signals:
-    void sigWatchedComponentChanged(int p_entityId,QString p_componentName,QVariant p_value);
+    /**
+     * @brief sigEvent
+     * processEvent emits sigEvent for usecases where we want to handle
+     * events the classic way. sigEvent takes a copy and not a pointer.
+     * This will have some performance impact but is much safer.
+     * Furthermore please note that only commandEvents will be forwarded.
+     * You can still use sigSendEvent to transmit data into the system.
+     * @param t_event
+     */
+    void sigEvent(QEvent t_event);
+
 private:
     bool processCommandEvent(VeinEvent::CommandEvent *p_cEvent);
 
