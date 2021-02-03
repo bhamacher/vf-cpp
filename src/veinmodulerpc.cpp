@@ -44,13 +44,14 @@ QString cVeinModuleRpc::rpcName() const
     return m_rpcName;
 };
 
-void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
+void cVeinModuleRpc::callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &p_rpcParameters)
 {
-    emit callFunctionPrivateSignal(p_callId,p_peerId,t_rpcParameters);
+    emit callFunctionPrivateSignal(p_callId,p_peerId,p_rpcParameters);
 };
 
-void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_peerId, const QVariantMap &t_rpcParameters)
+void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_peerId, const QVariantMap &p_rpcParameters)
 {
+    Q_UNUSED(p_callId);
     const auto rpcHandling = [=]() {
         QMutexLocker locker(&(this->m_mutex));
         QVariantMap returnVal;
@@ -59,7 +60,7 @@ void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_p
         // check parameters
         QStringList requiredParamList = m_parameter.keys();
         QSet<QString> requiredParamKeys(requiredParamList.begin(), requiredParamList.end());
-        const QVariantMap searchParameters = t_rpcParameters.value(VeinComponent::RemoteProcedureData::s_parameterString).toMap();
+        const QVariantMap searchParameters = p_rpcParameters.value(VeinComponent::RemoteProcedureData::s_parameterString).toMap();
         QStringList searchParamList = searchParameters.keys();
         requiredParamKeys.subtract(QSet<QString>(searchParamList.begin(), searchParamList.end()));
 
@@ -84,12 +85,12 @@ void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_p
 
         }else{
             // write error msg on error
-            returnVal=t_rpcParameters;
+            returnVal=p_rpcParameters;
             returnVal.insert(VeinComponent::RemoteProcedureData::s_resultCodeString, RPCResultCodes::RPC_EINVAL);
             returnVal.insert(VeinComponent::RemoteProcedureData::s_errorMessageString, QString("Missing required parameters: [%1]").arg(requiredParamList.join(',')));
         }
         // send answer
-        returnVal.insert(VeinComponent::RemoteProcedureData::s_callIdString,t_rpcParameters[VeinComponent::RemoteProcedureData::s_callIdString]);
+        returnVal.insert(VeinComponent::RemoteProcedureData::s_callIdString,p_rpcParameters[VeinComponent::RemoteProcedureData::s_callIdString]);
         VeinComponent::RemoteProcedureData *resultData = new VeinComponent::RemoteProcedureData();
         resultData->setEntityId(m_nEntityId);
         resultData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);

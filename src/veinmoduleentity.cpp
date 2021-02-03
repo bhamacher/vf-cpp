@@ -30,9 +30,9 @@ VeinModuleEntity::~VeinModuleEntity()
     m_eventHandler->removeSubsystem(this);
 }
 
-bool VeinModuleEntity::hasComponent(const QString name)
+bool VeinModuleEntity::hasComponent(const QString p_name)
 {
-    return m_componentList.contains(name);
+    return m_componentList.contains(p_name);
 }
 
 cVeinModuleComponent::WPtr  VeinModuleEntity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction)
@@ -65,21 +65,21 @@ cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_f
     return tmpPtr;
 }
 
-bool VeinModuleEntity::processEvent(QEvent *t_event)
+bool VeinModuleEntity::processEvent(QEvent *p_event)
 {
     bool retVal = false;
-    if(t_event->type()==VeinEvent::CommandEvent::eventType())
+    if(p_event->type()==VeinEvent::CommandEvent::eventType())
     {
         VeinEvent::CommandEvent *cEvent = nullptr;
         VeinEvent::EventData *evData = nullptr;
-        cEvent = static_cast<VeinEvent::CommandEvent *>(t_event);
+        cEvent = static_cast<VeinEvent::CommandEvent *>(p_event);
         Q_ASSERT(cEvent != nullptr);
 
         evData = cEvent->eventData();
         Q_ASSERT(evData != nullptr);
         retVal = processCommandEvent(cEvent);
 
-        emit sigEvent(*t_event);
+        emit sigEvent(*p_event);
 
     }
     return retVal;
@@ -293,14 +293,14 @@ QMap<int, QMap<QString,VeinProxyComp::Ptr> > VeinModuleEntity::getWatchList() co
     return m_watchList;
 }
 
-void VeinModuleEntity::setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> > &watchList)
+void VeinModuleEntity::setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> > &p_watchList)
 {
-    m_watchList = watchList;
+    m_watchList = p_watchList;
 }
 
-void VeinModuleEntity::setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value)
+void VeinModuleEntity::setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &p_value)
 {
-    m_rpcList = value;
+    m_rpcList = p_value;
 }
 
 QMap<QString, cVeinModuleComponent::Ptr> VeinModuleEntity::getComponentList() const
@@ -308,7 +308,7 @@ QMap<QString, cVeinModuleComponent::Ptr> VeinModuleEntity::getComponentList() co
     return m_componentList;
 }
 
-void VeinModuleEntity::setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value)
+void VeinModuleEntity::setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &p_value)
 {
-    m_componentList = value;
+    m_componentList = p_value;
 }

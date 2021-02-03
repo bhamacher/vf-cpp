@@ -73,7 +73,7 @@ public:
      * @param p_peerId: vein peerid
      * @param t_rpcParameters: parameterlist
      */
-    void callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters);
+    void callFunction(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &p_rpcParameters);
 
 
 private slots:
@@ -81,13 +81,13 @@ private slots:
      * @brief callFunctionPrivate
      * Same as call function. Only use of this slot is to queue rpc processing until qt main thread has time.
      */
-    void callFunctionPrivate(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters);
+    void callFunctionPrivate(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &p_rpcParameters);
 signals:
     /**
      * @brief callFunctionPrivateSignal
      * Triggers callFunctionPrivatSlot. Is emited in callFunction function.
      */
-    void callFunctionPrivateSignal(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &t_rpcParameters);
+    void callFunctionPrivateSignal(const QUuid &p_callId,const QUuid &p_peerId, const QVariantMap &p_rpcParameters);
 
 private:
     QObject *m_object;

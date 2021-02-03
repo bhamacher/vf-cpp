@@ -7,13 +7,14 @@ VeinProxyValidator::VeinProxyValidator(QPointer<VeinProxyComp> p_proxyComp, QObj
 
 }
 
-void VeinProxyValidator::fixup(QString &input) const
+void VeinProxyValidator::fixup(QString &p_input) const
 {
-
+    Q_UNUSED(p_input);
 }
 
 QValidator::State VfCpp::VeinProxyValidator::validate(QString &p_input, int &p_pos) const
 {
+    Q_UNUSED(p_input);
     if(!m_proxyComp.isNull()){
         m_proxyComp->setValue(QVariant(p_input));
     }

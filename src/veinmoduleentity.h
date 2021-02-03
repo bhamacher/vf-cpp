@@ -38,7 +38,7 @@ public:
      * @param [in] name: the component name
      * @return true if component was found
      */
-    bool hasComponent(const QString name);
+    bool hasComponent(const QString p_name);
     /**
      * @brief createComponent creates a new vein component
      * @param[in] name: the component name
@@ -48,9 +48,9 @@ public:
      *
      * it is recommended to store the handler in vfcompproxy.
      */
-    cVeinModuleComponent::WPtr  createComponent(QString name, QVariant initval, cVeinModuleComponent::Direction p_direction = cVeinModuleComponent::Direction::inOut);
+    cVeinModuleComponent::WPtr  createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction = cVeinModuleComponent::Direction::inOut);
 
-    bool removeComponent(const QString &name);
+    bool removeComponent(const QString &p_name);
     /**
      * @brief createRpc creates a vein rpc
      * @param p_object: the object handling the rpc
@@ -69,7 +69,7 @@ public:
      *
      * do not use!
      */
-    bool processEvent(QEvent *t_event) override;
+    bool processEvent(QEvent *p_event) override;
     /**
      * @brief watchComponent
      * @param p_EntityId
@@ -89,11 +89,11 @@ public:
     VeinRpcFuture::Ptr invokeRPC(int p_entityId,const QString &p_procedureName, const QVariantMap &p_parameters);
 public:
     QMap<QString, cVeinModuleComponent::Ptr> getComponentList() const;
-    void setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &value);
+    void setComponentList(const QMap<QString, cVeinModuleComponent::Ptr> &p_value);
     QMap<QString, cVeinModuleRpc::Ptr> getRpcList() const;
-    void setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &value);
+    void setRpcList(const QMap<QString, cVeinModuleRpc::Ptr> &p_value);
     QMap<int, QMap<QString,VeinProxyComp::Ptr> > getWatchList() const;
-    void setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> >  &watchList);
+    void setWatchList(const QMap<int, QMap<QString,VeinProxyComp::Ptr> >  &p_watchList);
     int getEntitiyId() const;
 public slots:
     /**

@@ -41,11 +41,11 @@ void VeinProxyComp::init()
     emit m_pEventSystem->sigSendEvent(cEvent);
 }
 
-void VeinProxyComp::setValueByEvent(QVariant value)
+void VeinProxyComp::setValueByEvent(QVariant p_value)
 {
-    if(value != getValue()){
-        setValue(value);
-        emit sigValueChanged(value);
+    if(p_value != getValue()){
+        setValue(p_value);
+        emit sigValueChanged(p_value);
     }
 }
 
@@ -100,12 +100,12 @@ int VeinProxyComp::getSubEntityId() const
     return m_subEntityId;
 }
 
-void VeinProxyComp::setSubEntityId(int subEntityId)
+void VeinProxyComp::setSubEntityId(int p_subEntityId)
 {
-    m_subEntityId = subEntityId;
+    m_subEntityId = p_subEntityId;
 }
 
-void VeinProxyComp::sendTransaction(VeinComponent::ComponentData::Command vcmd, QVariant p_value)
+void VeinProxyComp::sendTransaction(VeinComponent::ComponentData::Command p_vcmd, QVariant p_value)
 {
     VeinComponent::ComponentData *cData;
 
@@ -114,7 +114,7 @@ void VeinProxyComp::sendTransaction(VeinComponent::ComponentData::Command vcmd, 
     cData->setEntityId(m_subEntityId);
     cData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
     cData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
-    cData->setCommand(vcmd);
+    cData->setCommand(p_vcmd);
     cData->setComponentName(m_subComponentName);
     cData->setNewValue(p_value);
 

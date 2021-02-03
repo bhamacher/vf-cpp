@@ -38,12 +38,12 @@ public:
 
     };
 
-    VeinSharedComp(VeinAbstractComponent::WPtr obj){
-        m_component=obj;
+    VeinSharedComp(VeinAbstractComponent::WPtr p_obj){
+        m_component=p_obj;
     };
 
-    VeinSharedComp(VeinSharedComp &obj){
-        m_component=obj.m_component;
+    VeinSharedComp(VeinSharedComp &p_obj){
+        m_component=p_obj.m_component;
     };
 
     ~VeinSharedComp()
@@ -94,15 +94,15 @@ public:
      * @param other: the vein Value
      * @return new VeinSharedComp
      */
-    VeinSharedComp<T>& operator=(const T& other){
+    VeinSharedComp<T>& operator=(const T& p_other){
         if(m_component != nullptr){
-            setValue(other);
+            setValue(p_other);
         }
         return *this;
     };
 
-    VeinSharedComp<T>& operator=(VeinAbstractComponent::WPtr other){
-        m_component=other;
+    VeinSharedComp<T>& operator=(VeinAbstractComponent::WPtr p_other){
+        m_component=p_other;
         return *this;
     };
 
@@ -115,8 +115,8 @@ public:
         return m_component;
     };
 
-    bool operator!=(const T& val){
-        if(val != value()){
+    bool operator!=(const T& p_val){
+        if(p_val != value()){
             return true;
         }
         return false;
@@ -128,8 +128,8 @@ public:
      * @param val
      * @return true/false
      */
-    bool operator==(const T& val){
-        if(val == value()){
+    bool operator==(const T& p_val){
+        if(p_val == value()){
             return true;
         }else{
             return false;
@@ -142,8 +142,8 @@ public:
      * @param val
      * @return true/false
      */
-    bool operator>=(const T& val){
-        if(val >= value()){
+    bool operator>=(const T& p_val){
+        if(p_val >= value()){
             return true;
         }else{
             return false;
@@ -155,8 +155,8 @@ public:
      * @param val
      * @return true/false
      */
-    bool operator<=(const T& val){
-        if(val <= value()){
+    bool operator<=(const T& p_val){
+        if(p_val <= value()){
             return true;
         }else{
             return false;
@@ -169,8 +169,8 @@ public:
      * @param val
      * @return true/false
      */
-    bool operator<(const T& val){
-        if(val > value()){
+    bool operator<(const T& p_val){
+        if(p_val > value()){
             return true;
         }else{
             return false;
@@ -183,8 +183,8 @@ public:
      * @param val
      * @return true/false
      */
-    bool operator>(const T& val){
-        if(val < value()){
+    bool operator>(const T& p_val){
+        if(p_val < value()){
             return true;
         }else{
             return false;

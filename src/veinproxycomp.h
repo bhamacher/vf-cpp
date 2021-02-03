@@ -55,13 +55,13 @@ public:
      * processEvent functions.
      * @param value
      */
-    void setValueByEvent(QVariant value);
+    void setValueByEvent(QVariant p_value);
 
     QVariant getValue() override;
     QString getName() override;
 
     int getSubEntityId() const;
-    void setSubEntityId(int subEntityId);
+    void setSubEntityId(int p_subEntityId);
 
 public slots:
     void setValue(QVariant p_value, TakeOver p_takeOver); // here we have to emit event for notification
@@ -87,7 +87,7 @@ protected:
      * sends data to vein, if something changed
      * @param vcmd
      */
-    virtual void sendTransaction(VeinComponent::ComponentData::Command vcmd, QVariant p_value);
+    virtual void sendTransaction(VeinComponent::ComponentData::Command p_vcmd, QVariant p_value);
 
 };
 

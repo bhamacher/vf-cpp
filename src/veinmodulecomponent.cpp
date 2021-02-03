@@ -88,36 +88,36 @@ QPointer<QValidator> cVeinModuleComponent::getValidator() const
     return m_validator;
 }
 
-void cVeinModuleComponent::setValidator(const QPointer<QValidator> &validator)
+void cVeinModuleComponent::setValidator(const QPointer<QValidator> &p_validator)
 {
-    m_validator = validator;
+    m_validator = p_validator;
     if(!m_validator.isNull()){
         m_validator->setParent(this);
     }
 }
 
-void cVeinModuleComponent::setValueByEvent(QVariant value)
+void cVeinModuleComponent::setValueByEvent(QVariant p_value)
 {
-    if(value != getValue()){
+    if(p_value != getValue()){
         if(m_direction == Direction::in || m_direction == Direction::inOut){
             if(!m_validator.isNull()){
-                QString valValue=value.toString();
+                QString valValue=p_value.toString();
                 int valPos=0;
                 if(m_validator->validate(valValue,valPos) == QValidator::State::Acceptable){
-                    m_vValue = value;
+                    m_vValue = p_value;
                     sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
                 }
             }else{
-                m_vValue = value;
+                m_vValue = p_value;
                 sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
             }
         }
-        emit sigValueChanged(value);
+        emit sigValueChanged(p_value);
     }
 }
 
 
-void cVeinModuleComponent::sendNotification(VeinComponent::ComponentData::Command vcmd)
+void cVeinModuleComponent::sendNotification(VeinComponent::ComponentData::Command p_vcmd)
 {
     VeinComponent::ComponentData *cData;
 
@@ -126,7 +126,7 @@ void cVeinModuleComponent::sendNotification(VeinComponent::ComponentData::Comman
     cData->setEntityId(m_nEntityId);
     cData->setEventOrigin(VeinEvent::EventData::EventOrigin::EO_LOCAL);
     cData->setEventTarget(VeinEvent::EventData::EventTarget::ET_ALL);
-    cData->setCommand(vcmd);
+    cData->setCommand(p_vcmd);
     cData->setComponentName(m_sName);
     cData->setNewValue(m_vValue);
 
