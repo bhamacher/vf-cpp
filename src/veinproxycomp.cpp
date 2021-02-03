@@ -24,7 +24,7 @@ VeinProxyComp::VeinProxyComp(int p_entityId, QPointer<VeinModuleEntity> p_events
 
 VeinProxyComp::~VeinProxyComp()
 {
-   m_pEventSystem->removeComponent(m_realComponent.toStrongRef()->getName());
+    m_pEventSystem->removeComponent(m_realComponent.toStrongRef()->getName());
 }
 
 void VeinProxyComp::init()
@@ -44,7 +44,7 @@ void VeinProxyComp::init()
 void VeinProxyComp::setValueByEvent(QVariant value)
 {
     if(value != getValue()){
-            setValue(value);
+        setValue(value);
         emit sigValueChanged(value);
     }
 }

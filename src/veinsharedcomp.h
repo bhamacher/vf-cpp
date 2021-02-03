@@ -64,9 +64,9 @@ public:
      * @param p_val vein value of type T
      */
     void setValue(T p_val){
-       if(m_component != nullptr){
+        if(m_component != nullptr){
             m_component.toStrongRef()->setValue(p_val);
-       }
+        }
     };
 
     void removeComponent(){
@@ -119,7 +119,7 @@ public:
         if(val != value()){
             return true;
         }
-            return false;
+        return false;
     };
 
     /**

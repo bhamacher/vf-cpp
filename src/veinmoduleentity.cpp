@@ -77,9 +77,9 @@ bool VeinModuleEntity::processEvent(QEvent *t_event)
 
         evData = cEvent->eventData();
         Q_ASSERT(evData != nullptr);
-            retVal = processCommandEvent(cEvent);
+        retVal = processCommandEvent(cEvent);
 
-            emit sigEvent(*t_event);
+        emit sigEvent(*t_event);
 
     }
     return retVal;
@@ -124,7 +124,7 @@ VeinRpcFuture::Ptr VeinModuleEntity::invokeRPC(int p_entityId, const QString &p_
         m_futureList[p_entityId]=QMap<QString,QMap<QUuid,VeinRpcFuture::Ptr>>();
     }
     if(!m_futureList[p_entityId].contains(p_procedureName)){
-            m_futureList[p_entityId][p_procedureName]=QMap<QUuid,VeinRpcFuture::Ptr>();
+        m_futureList[p_entityId][p_procedureName]=QMap<QUuid,VeinRpcFuture::Ptr>();
     }
     m_futureList[p_entityId][p_procedureName][rpcIdentifier]=tmpFuture;
 
