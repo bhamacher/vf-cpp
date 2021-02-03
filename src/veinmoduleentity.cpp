@@ -54,13 +54,7 @@ bool veinmoduleentity::processEvent(QEvent *t_event)
 
         evData = cEvent->eventData();
         Q_ASSERT(evData != nullptr);
-
-        if(evData->entityId() == m_entityId)
-        {
-            // does the actual handling if event is of the correct type and
-            // addresses this entity
-            retVal = processCommandEvent(cEvent);
-        }
+        retVal = processCommandEvent(cEvent);
     }
     return retVal;
 }
