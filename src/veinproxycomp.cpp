@@ -22,6 +22,11 @@ VeinProxyComp::VeinProxyComp(int p_entityId, QPointer<VeinModuleEntity> p_events
     connect(m_realComponent.toStrongRef().data(),&VeinAbstractComponent::sigValueChanged,this,&VeinAbstractComponent::setValue);
 }
 
+VeinProxyComp::~VeinProxyComp()
+{
+   m_pEventSystem->removeComponent(m_realComponent.toStrongRef()->getName());
+}
+
 void VeinProxyComp::init()
 {
     VeinEvent::CommandEvent *cEvent = nullptr;
@@ -83,6 +88,11 @@ void VeinProxyComp::setValue(QVariant p_value)
 void VeinProxyComp::setError()
 {
 
+}
+
+void VeinProxyComp::removeComponent()
+{
+    m_pEventSystem->removeProxyComponent(m_subEntityId,m_subComponentName);
 }
 
 int VeinProxyComp::getSubEntityId() const

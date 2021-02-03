@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QList>
 #include <QUuid>
+#include <QPointer>
 #include <QSharedPointer>
 #include <QMutexLocker>
 
@@ -96,7 +97,7 @@ private:
     QString m_rpcName;
 
     int m_nEntityId;
-    VeinEvent::EventSystem *m_pEventSystem;
+    QPointer<VeinEvent::EventSystem> m_pEventSystem;
 
     bool m_threaded;
 

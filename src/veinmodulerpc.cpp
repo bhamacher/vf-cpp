@@ -31,8 +31,9 @@ cVeinModuleRpc::cVeinModuleRpc(int entityId, VeinEvent::EventSystem *eventsystem
 
     QObject::connect(this,&cVeinModuleRpc::callFunctionPrivateSignal,this,&cVeinModuleRpc::callFunctionPrivate,Qt::QueuedConnection);
 
-
-    emit  m_pEventSystem->sigSendEvent(new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, rpcData));
+    if(!m_pEventSystem.isNull()){
+        emit  m_pEventSystem->sigSendEvent(new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, rpcData));
+    }
 }
 cVeinModuleRpc::~cVeinModuleRpc(){
 
@@ -100,7 +101,9 @@ void cVeinModuleRpc::callFunctionPrivate(const QUuid &p_callId, const QUuid &p_p
 
         VeinEvent::CommandEvent *rpcResultEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, resultData);
         rpcResultEvent->setPeerId(p_peerId);
-        emit m_pEventSystem->sigSendEvent(rpcResultEvent);
+        if(!m_pEventSystem.isNull()){
+            emit m_pEventSystem->sigSendEvent(rpcResultEvent);
+        }
     };
 
     if(m_threaded){

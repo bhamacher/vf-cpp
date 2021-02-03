@@ -69,6 +69,13 @@ public:
        }
     };
 
+    void removeComponent(){
+        if(!m_component.isNull()){
+            m_component.toStrongRef()->removeComponent();
+        }
+
+    }
+
 
     /**
      * @brief component

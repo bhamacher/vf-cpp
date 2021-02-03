@@ -32,6 +32,7 @@ signals:
 public slots:
     virtual void setValue(QVariant value) = 0; // here we have to emit event for notification
     virtual void setError() = 0; // here we have to emit event for error notification
+    virtual void removeComponent() = 0;
 
 
 signals:

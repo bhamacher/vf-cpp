@@ -1,6 +1,7 @@
 #include "veinmoduleentity.h"
 #include "vcmp_entitydata.h"
 #include "vcmp_remoteproceduredata.h"
+#include "ve_eventhandler.h"
 
 using namespace VfCpp;
 using namespace VeinComponent;
@@ -15,6 +16,18 @@ VeinModuleEntity::VeinModuleEntity(int p_entityId,QObject *p_parent):
 
 VeinModuleEntity::~VeinModuleEntity()
 {
+    m_watchList.clear();
+    m_componentList.clear();
+    m_rpcList.clear();
+
+    if(m_attached){
+        VeinComponent::EntityData *eData = new VeinComponent::EntityData();
+        eData->setCommand(VeinComponent::EntityData::Command::ECMD_REMOVE);
+        eData->setEntityId(m_entityId);
+        VeinEvent::CommandEvent *tmpEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, eData);
+        emit sigSendEvent(tmpEvent);
+    }
+    m_eventHandler->removeSubsystem(this);
 }
 
 bool VeinModuleEntity::hasComponent(const QString name)
@@ -34,6 +47,15 @@ cVeinModuleComponent::WPtr  VeinModuleEntity::createComponent(QString p_name, QV
     }
 }
 
+bool VeinModuleEntity::removeComponent(const QString &p_name)
+{
+    if(m_componentList.contains(p_name)){
+        m_componentList[p_name].clear();
+        m_componentList.remove(p_name);
+        return true;
+    }
+    return false;
+}
 
 
 cVeinModuleRpc::WPtr  VeinModuleEntity::createRpc(QObject *p_object, QString p_funcName, QMap<QString, QString> p_parameter, bool p_threaded)

@@ -81,10 +81,11 @@ signals:
 public slots:
     void setValue(QVariant value); // here we have to emit event for notification
     void setError(); // here we have to emit event for error notification
+    void removeComponent() override;
 
 protected:
     int m_nEntityId;
-    VeinEvent::EventSystem *m_pEventSystem;
+    QPointer<VeinEvent::EventSystem> m_pEventSystem;
     QString m_sName;
     QVariant m_vValue;
     Direction m_direction;

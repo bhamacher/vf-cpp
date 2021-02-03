@@ -70,10 +70,18 @@ void cVeinModuleComponent::setError()
     VeinEvent::CommandEvent *cEvent = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, errData);
     QUuid id; // null id
     cEvent->setPeerId(id);
-
-    m_pEventSystem->sigSendEvent(cEvent);
-
+    if(!m_pEventSystem.isNull()){
+        m_pEventSystem->sigSendEvent(cEvent);
+    }
 }
+
+void cVeinModuleComponent::removeComponent()
+{
+    // This is noot in use yet. We have code where these components are used without VeinModuleEntity.
+    // The issue is, that this feature only works with VeinModuleEntity, because the component must remove itself
+    // from the entity here. At the moment this component onyl knows classes of type EventSystem.
+}
+
 
 QPointer<QValidator> cVeinModuleComponent::getValidator() const
 {
@@ -126,7 +134,8 @@ void cVeinModuleComponent::sendNotification(VeinComponent::ComponentData::Comman
     event = new VeinEvent::CommandEvent(VeinEvent::CommandEvent::EventSubtype::NOTIFICATION, cData);
     QUuid id; // null id
     event->setPeerId(id);
-
-    emit m_pEventSystem->sigSendEvent(event);
+    if(!m_pEventSystem.isNull()){
+        emit m_pEventSystem->sigSendEvent(event);
+    }
 }
 
