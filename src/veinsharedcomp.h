@@ -2,8 +2,10 @@
 #define VeinSharedComp_H
 
 
-
+#include <QObject>
 #include "veinabstractcomponent.h"
+#include "veinmodulecomponent.h"
+#include "veinproxycomp.h"
 
 
 namespace VfCpp {
@@ -101,7 +103,13 @@ public:
         return *this;
     };
 
-    VeinSharedComp<T>& operator=(VeinAbstractComponent::WPtr p_other){
+    VeinSharedComp<T>& operator=(cVeinModuleComponent::WPtr p_other){
+        m_component=p_other;
+        return *this;
+    };
+
+
+    VeinSharedComp<T>& operator=(VeinProxyComp::WPtr p_other){
         m_component=p_other;
         return *this;
     };
