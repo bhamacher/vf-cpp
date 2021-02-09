@@ -40,12 +40,12 @@ public:
 
     };
 
-    VeinSharedComp(VeinAbstractComponent::WPtr p_obj){
+    VeinSharedComp(VeinProxyComp::WPtr p_obj){
         m_component=p_obj;
     };
 
-    VeinSharedComp(VeinSharedComp &p_obj){
-        m_component=p_obj.m_component;
+    VeinSharedComp(cVeinModuleComponent::WPtr p_obj){
+        m_component=p_obj;
     };
 
     ~VeinSharedComp()
@@ -206,11 +206,6 @@ public:
         }
     };
 
-    /**
-     * @brief operator new
-     * The new operator is deleted.
-     */
-    void* operator new(std::size_t size) = delete ;
 
 private:
 
