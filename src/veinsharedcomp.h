@@ -71,6 +71,13 @@ public:
         }
     };
 
+    QString name(){
+        if(!m_component.isNull()){
+            return m_component.toStrongRef()->getName();
+        }
+        return QString();
+    }
+
     void removeComponent(){
         if(!m_component.isNull()){
             m_component.toStrongRef()->removeComponent();
