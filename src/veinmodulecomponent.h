@@ -45,7 +45,8 @@ public:
     enum class Direction{
         out,
         in,
-        inOut
+        inOut,
+        constant
     };
 
     /**
