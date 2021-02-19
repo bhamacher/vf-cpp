@@ -56,9 +56,10 @@ add_library(VfCpp SHARED
 
 #link dependencies
 target_link_libraries(VfCpp 
+    PUBLIC
+    Qt5::Gui
     PRIVATE
     Qt5::Core
-    Qt5::Gui
     VeinMeta::VfHelpers
     VeinMeta::VfEvent
     VeinMeta::VfComponent
