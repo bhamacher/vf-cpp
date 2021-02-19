@@ -67,7 +67,7 @@ public:
      */
     void setValue(T p_val){
         if(m_component != nullptr){
-            m_component.toStrongRef()->setValue(p_val);
+            m_component.toStrongRef()->setValue(QVariant::fromValue<T>(p_val));
         }
     };
 
