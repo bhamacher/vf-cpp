@@ -41,11 +41,14 @@ bool VeinModuleEntity::hasComponent(const QString p_name)
     return m_componentList.contains(p_name);
 }
 
-cVeinModuleComponent::WPtr  VeinModuleEntity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction)
+cVeinModuleComponent::WPtr  VeinModuleEntity::createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction,QValidator* p_validator)
 {
     if(!hasComponent(p_name)) {
         cVeinModuleComponent::Ptr tmpPtr=cVeinModuleComponent::Ptr(new cVeinModuleComponent(m_entityId,this,p_name,p_initval,p_direction));
         m_componentList[tmpPtr->getName()]=tmpPtr;
+        if(p_validator != nullptr){
+            tmpPtr->setValidator(p_validator);
+        }
         return tmpPtr;
     }
     else {

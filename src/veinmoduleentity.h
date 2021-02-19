@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMap>
 #include <QPointer>
+#include <QValidator>
 #include <ve_eventsystem.h>
 
 #include "veinmodulecomponent.h"
@@ -48,7 +49,7 @@ public:
      *
      * it is recommended to store the handler in vfcompproxy.
      */
-    cVeinModuleComponent::WPtr  createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction = cVeinModuleComponent::Direction::inOut);
+    cVeinModuleComponent::WPtr  createComponent(QString p_name, QVariant p_initval, cVeinModuleComponent::Direction p_direction = cVeinModuleComponent::Direction::inOut, QValidator *p_validator=nullptr);
 
     bool removeComponent(const QString &p_name);
     /**
