@@ -107,14 +107,16 @@ void cVeinModuleComponent::setValueByEvent(QVariant p_value)
                 // if there is a validator set data only if validator returns true.
                 if(m_validator->validate(valValue,valPos) == QValidator::State::Acceptable){
                     m_vValue = p_value;
+                    emit sigValueChanged(p_value);
                     sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
                 }
             }else{
                 m_vValue = p_value;
+                emit sigValueChanged(p_value);
                 sendNotification(VeinComponent::ComponentData::Command::CCMD_SET);
             }
         }
-        emit sigValueChanged(p_value);
+
     }
 }
 
