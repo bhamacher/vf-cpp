@@ -75,10 +75,6 @@ public:
     QPointer<QValidator> getValidator() const;
     void setValidator(const QPointer<QValidator> &p_validator);
 
-signals:
-    void sigValueChanged(QVariant); // we connect here if we want to do something on changed values
-    void sigValueQuery(QVariant); // we connect here if we want to read a value before returning data from storage ...perhaps with parameter
-
 public slots:
     void setValue(QVariant p_value); // here we have to emit event for notification
     void setError(); // here we have to emit event for error notification
